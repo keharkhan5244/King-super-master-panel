@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Cricket Ball-by-Ball Engine - King Super Master Panel</title>
+  <style>
+    :root {
+      --bg: #0f0e09;
+      --card: #1a170d;
+      --card-2: #242012;
+      --text: #fff9eb;
+      --muted: #cbb988;
+      --gold: #f5b700;
+      --gold-dark: #b88600;
+      --gold-soft: rgba(245, 183, 0, 0.15);
+      --border: rgba(245, 183, 0, 0.28);
+      --live: #22c55e;
+      --wicket: #ef4444;
+      --four: #38bdf8;
+      --six: #f59e0b;
+    }
+
+    body.light {
+      --bg: #f8f4e8;
+      --card: #ffffff;
+      --card-2: #f3ecda;
+      --text: #1c180e;
+      --muted: #665d43;
+      --gold: #d49600;
+      --gold-dark: #9e6f00;
+      --gold-soft: rgba(212, 150, 0, 0.14);
+      --border: rgba(212, 150, 0, 0.34);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 14px;
+    }
+
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+      color: var(--gold);
+    }
+
+    .brand p {
+      margin: 3px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    button {
+      border: 1px solid var(--border);
+      background: var(--gold-soft);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 9px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button.gold {
+      background: var(--gold);
+      color: #11100b;
+      border-color: var(--gold);
+    }
+
+    button.live-on {
+      background: var(--live);
+      color: #07160c;
+      border-color: var(--live);
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .match-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .match-tab.active {
+      background: var(--gold);
+      color: #11100b;
+      border-color: var(--gold);
+    }
+
+    .scoreboard-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .pill-live {
+      background: rgba(34, 197, 94, 0.16);
+      color: var(--live);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 3px 9px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .score-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 10px;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .team-box {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .team-box.right {
+      text-align: right;
+    }
+
+    html[dir="rtl"] .team-box.right {
+      text-align: left;
+    }
+
+    .score-center {
+      text-align: center;
+    }
+
+    .main-score {
+      font-size: 26px;
+      font-weight: bold;
+      color: var(--gold);
+    }
+
+    .sub-score {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 600px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .stat-card {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .stat-val {
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+
+    .over-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ball-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .ball-4 {
+      background: rgba(56, 189, 248, 0.2);
+      color: var(--four);
+      border-color: var(--four);
+    }
+
+    .ball-6 {
+      background: rgba(245, 158, 11, 0.22);
+      color: var(--six);
+      border-color: var(--six);
+    }
+
+    .ball-w {
+      background: rgba(239, 68, 68, 0.22);
+      color: var(--wicket);
+      border-color: var(--wicket);
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--gold);
+      margin: 0 0 10px;
+    }
+
+    .commentary-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .comm-item {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+
+    .comm-top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      .market-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .odds-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .odds-btn.selected {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    .slip-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .slip-bar input {
+      flex: 1;
+      min-width: 120px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <h1 id="appTitle">Live Cricket Ball-by-Ball Engine</h1>
+        <p id="appSub">Real-time ball feed, overs, run rate, commentary &amp; demo points slip</p>
+      </div>
+      <div class="toolbar">
+        <button id="langBtn" onclick="toggleLang()">اردو</button>
+        <button id="themeBtn" onclick="toggleTheme()">Light</button>
+        <button id="autoBtn" class="live-on" onclick="toggleAutoFeed()">Auto Live: ON</button>
+        <button class="gold" id="ballBtn" onclick="stepBall()">Next Ball</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="match-tabs" id="matchTabs"></div>
+
+      <div class="scoreboard-head">
+        <span id="leagueLabel">T20 Match • National Stadium</span>
+        <span class="pill-live" id="statusBadge">LIVE</span>
+      </div>
+
+      <div class="score-grid">
+        <div class="team-box" id="batTeamName">Karachi Kings</div>
+        <div class="score-center">
+          <div class="main-score" id="scoreDisplay">142/3</div>
+          <div class="sub-score" id="oversDisplay">Overs: 15.2 (20)</div>
+        </div>
+        <div class="team-box right" id="bowlTeamName">Lahore Qalandars</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-label" id="crrLabel">Current Run Rate</div>
+          <div class="stat-val" id="crrVal">9.26</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="targetLabel">Target / Projected</div>
+          <div class="stat-val" id="targetVal">186</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="lastBallLabel">Last Ball</div>
+          <div class="stat-val" id="lastBallVal">4 Runs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" id="ptsLabel">Demo Points Balance</div>
+          <div class="stat-val" id="ptsVal">100</div>
+        </div>
+      </div>
+
+      <div class="over-strip" id="overBalls"></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title" id="marketTitle">Live Match Demo Market (Points Simulation)</h2>
+      <div class="market-grid" id="marketGrid"></div>
+      <div class="slip-bar">
+        <input type="number" id="stakeInput" min="1" value="10" placeholder="Points" />
+        <button class="gold" id="placeBtn" onclick="placeDemoPick()">Place Demo Pick</button>
+      </div>
+      <div class="note" id="slipNote">Select an outcome and enter demo points to test instant settlement on the next ball.</div>
+    </div>
+
+    <div class="panel">
+      <h2 class="section-title" id="commTitle">Ball-by-Ball Live Commentary</h2>
+      <div class="commentary-list" id="commList"></div>
+    </div>
+  </div>
+
+  <script>
+    const BALL_OUTCOMES = [
+      { code: "0", runs: 0, wicket: false, extraBall: true, en: "Dot ball! Tight delivery on off stump, no run.", ur: "ڈاٹ بال! آف اسٹمپ پر عمدہ گیند، کوئی رن نہیں۔" },
+      { code: "1", runs: 1, wicket: false, extraBall: true, en: "Pushed into the gap for a quick single.", ur: "گیپ میں کھیل کر ایک رن مکمل کیا۔" },
+      { code: "2", runs: 2, wicket: false, extraBall: true, en: "Driven wide of long-on, batters run two hard.", ur: "لانگ آن کے باہر ڈرائیو، بلے بازوں نے دو رنز لیے۔" },
+      { code: "4", runs: 4, wicket: false, extraBall: true, en: "FOUR! Cracked through point to the boundary rope!", ur: "چوکا! پوائنٹ کے علاقے سے شاندار باؤنڈری!" },
+      { code: "6", runs: 6, wicket: false, extraBall: true, en: "SIX! Massive hit straight over the bowler's head!", ur: "چھکا! بولر کے سر کے اوپر سے زبردست بلند شاٹ!" },
+      { code: "W", runs: 0, wicket: true, extraBall: true, en: "WICKET! Caught in the deep as the batter goes big!", ur: "وکٹ! بڑا شاٹ کھیلنے کی کوشش میں کیچ آؤٹ!" },
+      { code: "Wd", runs: 1, wicket: false, extraBall: false, en: "WIDE! Ball slips outside leg stump, extra run added.", ur: "وائڈ! گیند لیگ اسٹمپ سے باہر، اضافی رن ملا۔" }
+    ];
+
+    const matches = [
+      {
+        id: "m1",
+        leagueEn: "T20 Match • Karachi",
+        leagueUr: "ٹی ٹوئنٹی میچ • کراچی",
+        batEn: "Karachi Kings",
+        batUr: "کراچی کنگز",
+        bowlEn: "Lahore Qalandars",
+        bowlUr: "لاہور قلندرز",
+        maxOvers: 20,
+        runs: 142,
+        wickets: 3,
+        balls: 92, // 15.2 overs
+        lastBall: "4",
+        thisOver: ["1", "0", "4", "2", "1", "4"],
+        activePick: null,
+        commentary: [
+          { over: "15.2", badge: "4", en: "FOUR! Cracked through point to the boundary rope!", ur: "چوکا! پوائنٹ کے علاقے سے شاندار باؤنڈری!" },
+          { over: "15.1", badge: "0", en: "Dot ball! Tight delivery on off stump, no run.", ur: "ڈاٹ بال! آف اسٹمپ پر عمدہ گیند، کوئی رن نہیں۔" }
+        ]
+      },
+      {
+        id: "m2",
+        leagueEn: "ODI Match • Lahore",
+        leagueUr: "ون ڈے میچ • لاہور",
+        batEn: "Pakistan",
+        batUr: "پاکستان",
+        bowlEn: "Australia",
+        bowlUr: "آسٹریلیا",
+        maxOvers: 50,
+        runs: 218,
+        wickets: 4,
+        balls: 220, // 36.4 overs
+        lastBall: "1",
+        thisOver: ["6", "0", "1", "1"],
+        activePick: null,
+        commentary: [
+          { over: "36.4", badge: "1", en: "Pushed into the gap for a quick single.", ur: "گیپ میں کھیل کر ایک رن مکمل کیا۔" },
+          { over: "36.3", badge: "6", en: "SIX! Massive hit straight over the bowler's head!", ur: "چھکا! بولر کے سر کے اوپر سے زبردست بلند شاٹ!" }
+        ]
+      }
+    ];
+
+    let activeMatchId = "m1";
+    let isUrdu = false;
+    let demoPoints = 100;
+    let selectedMarket = "BOUNDARY";
+    let autoTimer = null;
+    let autoLive = true;
+
+    function getMatch() {
+      return matches.find(m => m.id === activeMatchId) || matches[0];
+    }
+
+    function ballsToOverString(totalBalls) {
+      const completedOvers = Math.floor(totalBalls / 6);
+      const remBalls = totalBalls % 6;
+      return `${completedOvers}.${remBalls}`;
+    }
+
+    function getRunRate(match) {
+      if (match.balls === 0) return "0.00";
+      return ((match.runs / match.balls) * 6).toFixed(2);
+    }
+
+    function getProjectedScore(match) {
+      if (match.balls === 0) return 0;
+      const crr = (match.runs / match.balls) * 6;
+      return Math.round(crr * match.maxOvers);
+    }
+
+    function settlePickOnBall(match, outcome) {
+      if (!match.activePick) return;
+      const pick = match.activePick;
+      match.activePick = null;
+
+      let won = false;
+      if (pick.market === "BOUNDARY" && (outcome.code === "4" || outcome.code === "6")) won = true;
+      if (pick.market === "WICKET" && outcome.wicket) won = true;
+      if (pick.market === "DOT_RUN" && (outcome.code === "0" || outcome.code === "1")) won = true;
+
+      if (won) {
+        const payout = Math.round(pick.stake * pick.odds);
+        demoPoints += payout;
+        document.getElementById("slipNote").textContent = isUrdu
+          ? `کامیابی! ${payout} ڈیمو پوائنٹس واپس مل گئے۔`
+          : `Won! +${payout} demo points credited on this ball.`;
+      } else {
+        document.getElementById("slipNote").textContent = isUrdu
+          ? `اس گیند پر پک کامیاب نہیں ہوئی (${pick.stake} پوائنٹس کٹ گئے)۔`
+          : `Pick did not hit on this ball (${pick.stake} demo points deducted).`;
+      }
+    }
+
+    function stepBall() {
+      const m = getMatch();
+      if (m.wickets >= 10 || Math.floor(m.balls / 6) >= m.maxOvers) {
+        stopAutoFeed();
+        return;
+      }
+
+      const outcome = BALL_OUTCOMES[Math.floor(Math.random() * BALL_OUTCOMES.length)];
+      m.runs += outcome.runs;
+      if (outcome.wicket) m.wickets += 1;
+      m.lastBall = outcome.code;
+
+      const overTag = ballsToOverString(m.balls + (outcome.extraBall ? 1 : 0));
+
+      if (outcome.extraBall) {
+        if (m.balls % 6 === 0) {
+          m.thisOver = [outcome.code];
+        } else {
+          m.thisOver.push(outcome.code);
+        }
+        m.balls += 1;
+      } else {
+        m.thisOver.push(outcome.code);
+      }
+
+      m.commentary.unshift({
+        over: overTag,
+        badge: outcome.code,
+        en: outcome.en,
+        ur: outcome.ur
+      });
+      if (m.commentary.length > 30) m.commentary.pop();
+
+      settlePickOnBall(m, outcome);
+      renderAll();
+    }
+
+    function placeDemoPick() {
+      const m = getMatch();
+      const stake = Number(document.getElementById("stakeInput").value);
+      if (!stake || stake <= 0) return;
+      if (stake > demoPoints) {
+        document.getElementById("slipNote").textContent = isUrdu
+          ? "اتنے ڈیمو پوائنٹس دستیاب نہیں ہیں۔"
+          : "Not enough demo points available.";
+        return;
+      }
+      if (m.activePick) {
+        document.getElementById("slipNote").textContent = isUrdu
+          ? "اگلی گیند کا نتیجہ آنے کا انتظار کریں۔"
+          : "Wait for the current ball pick to settle first.";
+        return;
+      }
+
+      const oddsMap = { BOUNDARY: 1.9, WICKET: 3.4, DOT_RUN: 1.75 };
+      demoPoints -= stake;
+      m.activePick = {
+        market: selectedMarket,
+        stake,
+        odds: oddsMap[selectedMarket] || 1.8
+      };
+
+      document.getElementById("slipNote").textContent = isUrdu
+        ? `${stake} پوائنٹس لگا دیے گئے ہیں، نتیجہ اگلی گیند پر آئے گا۔`
+        : `${stake} demo points locked for the next ball.`;
+      renderAll();
+    }
+
+    function startAutoFeed() {
+      stopAutoFeed();
+      autoTimer = setInterval(stepBall, 3500);
+    }
+
+    function stopAutoFeed() {
+      if (autoTimer) {
+        clearInterval(autoTimer);
+        autoTimer = null;
+      }
+    }
+
+    function toggleAutoFeed() {
+      autoLive = !autoLive;
+      if (autoLive) startAutoFeed();
+      else stopAutoFeed();
+      renderAll();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+      renderAll();
+    }
+
+    function toggleLang() {
+      isUrdu = !isUrdu;
+      document.documentElement.lang = isUrdu ? "ur" : "en";
+      document.documentElement.dir = isUrdu ? "rtl" : "ltr";
+      renderAll();
+    }
+
+    function selectMatch(id) {
+      activeMatchId = id;
+      renderAll();
+    }
+
+    function selectMarket(key) {
+      selectedMarket = key;
+      renderAll();
+    }
+
+    function ballClass(code) {
+      if (code === "4") return "ball-dot ball-4";
+      if (code === "6") return "ball-dot ball-6";
+      if (code === "W") return "ball-dot ball-w";
+      return "ball-dot";
+    }
+
+    function renderAll() {
+      const m = getMatch();
+      const isLight = document.body.classList.contains("light");
+
+      document.getElementById("appTitle").textContent = isUrdu
+        ? "لائیو کرکٹ بال بائی بال انجن"
+        : "Live Cricket Ball-by-Ball Engine";
+      document.getElementById("appSub").textContent = isUrdu
+        ? "بال بائی بال اپڈیٹس، اوورز، رن ریٹ، کمنٹری اور ڈیمو پوائنٹس"
+        : "Real-time ball feed, overs, run rate, commentary & demo points slip";
+      document.getElementById("langBtn").textContent = isUrdu ? "English" : "اردو";
+      document.getElementById("themeBtn").textContent = isLight ? "Dark" : "Light";
+      document.getElementById("autoBtn").textContent = autoLive
+        ? (isUrdu ? "آٹو لائیو: آن" : "Auto Live: ON")
+        : (isUrdu ? "آٹو لائیو: آف" : "Auto Live: OFF");
+      document.getElementById("autoBtn").className = autoLive ? "live-on" : "";
+      document.getElementById("ballBtn").textContent = isUrdu ? "اگلی گیند" : "Next Ball";
+
+      document.getElementById("matchTabs").innerHTML = matches.map(item => {
+        const nameA = isUrdu ? item.batUr : item.batEn;
+        const nameB = isUrdu ? item.bowlUr : item.bowlEn;
+        const active = item.id === m.id ? "match-tab active" : "match-tab";
+        return `<button class="${active}" onclick="selectMatch('${item.id}')">${nameA} vs ${nameB}</button>`;
+      }).join("");
+
+      document.getElementById("leagueLabel").textContent = isUrdu ? m.leagueUr : m.leagueEn;
+      document.getElementById("statusBadge").textContent = isUrdu ? "لائیو" : "LIVE";
+      document.getElementById("batTeamName").textContent = isUrdu ? m.batUr : m.batEn;
+      document.getElementById("bowlTeamName").textContent = isUrdu ? m.bowlUr : m.bowlEn;
+      document.getElementById("scoreDisplay").textContent = `${m.runs}/${m.wickets}`;
+      document.getElementById("oversDisplay").textContent = isUrdu
+        ? `اوورز: ${ballsToOverString(m.balls)} (${m.maxOvers})`
+        : `Overs: ${ballsToOverString(m.balls)} (${m.maxOvers})`;
+
+      document.getElementById("crrLabel").textContent = isUrdu ? "موجودہ رن ریٹ" : "Current Run Rate";
+      document.getElementById("crrVal").textContent = getRunRate(m);
+      document.getElementById("targetLabel").textContent = isUrdu ? "متوقع اسکور" : "Projected Score";
+      document.getElementById("targetVal").textContent = String(getProjectedScore(m));
+      document.getElementById("lastBallLabel").textContent = isUrdu ? "پچھلی گیند" : "Last Ball";
+      document.getElementById("lastBallVal").textContent = m.lastBall;
+      document.getElementById("ptsLabel").textContent = isUrdu ? "ڈیمو پوائنٹس" : "Demo Points Balance";
+      document.getElementById("ptsVal").textContent = String(demoPoints);
+
+      const overPrefix = isUrdu ? "اس اوور کی گیندیں:" : "This Over:";
+      document.getElementById("overBalls").innerHTML =
+        `<span style="font-size:12px;color:var(--muted);font-weight:bold;">${overPrefix}</span>` +
+        m.thisOver.map(b => `<span class="${ballClass(b)}">${b}</span>`).join("");
+
+      const markets = [
+        { key: "BOUNDARY", titleEn: "4 or 6 on Next Ball", titleUr: "اگلی گیند پر 4 یا 6", odds: "1.90x" },
+        { key: "WICKET", titleEn: "Wicket on Next Ball", titleUr: "اگلی گیند پر وکٹ", odds: "3.40x" },
+        { key: "DOT_RUN", titleEn: "0 or 1 Run Ball", titleUr: "0 یا 1 رن والی گیند", odds: "1.75x" }
+      ];
+
+      document.getElementById("marketTitle").textContent = isUrdu
+        ? "لائیو میچ ڈیمو آپشنز (پوائنٹس سمولیشن)"
+        : "Live Match Demo Market (Points Simulation)";
+      document.getElementById("marketGrid").innerHTML = markets.map(mk => {
+        const sel = selectedMarket === mk.key ? "odds-btn selected" : "odds-btn";
+        return `
+          <button class="${sel}" onclick="selectMarket('${mk.key}')">
+            <div style="font-weight:bold;font-size:13px;">${isUrdu ? mk.titleUr : mk.titleEn}</div>
+            <div style="color:var(--gold);font-weight:bold;font-size:12px;margin-top:4px;">${mk.odds}</div>
+          </button>
+        `;
+      }).join("");
+
+      document.getElementById("placeBtn").textContent = isUrdu ? "ڈیمو پک لگائیں" : "Place Demo Pick";
+      document.getElementById("commTitle").textContent = isUrdu
+        ? "بال بائی بال لائیو کمنٹری"
+        : "Ball-by-Ball Live Commentary";
+
+      document.getElementById("commList").innerHTML = m.commentary.map(c => `
+        <div class="comm-item">
+          <div class="comm-top">
+            <span style="color:var(--gold);">Over ${c.over}</span>
+            <span class="${ballClass(c.badge)}" style="width:24px;height:24px;font-size:11px;">${c.badge}</span>
+          </div>
+          <div>${isUrdu ? c.ur : c.en}</div>
+        </div>
+      `).join("");
+    }
+
+    renderAll();
+    startAutoFeed();
+  </script>
+</body>
+</html>
