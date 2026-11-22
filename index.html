@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KING SUPER MASTER PANEL</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0c0a05;
+      --surface: #161209;
+      --surface-2: #211b0e;
+      --text: #fff8e6;
+      --muted: #cbb88a;
+      --gold: #f5b700;
+      --gold-2: #ffd54f;
+      --border: rgba(245, 183, 0, 0.25);
+      --danger: #ef4444;
+      --success: #22c55e;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    body.light {
+      --bg: #fffdf6;
+      --surface: #ffffff;
+      --surface-2: #fff6db;
+      --text: #1c1506;
+      --muted: #6b592b;
+      --gold: #d99b00;
+      --gold-2: #f5b700;
+      --border: rgba(217, 155, 0, 0.28);
+      --danger: #dc2626;
+      --success: #16a34a;
+      --shadow: 0 10px 24px rgba(130, 92, 0, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", sans-serif; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background 0.2s, color 0.2s;
+      padding-bottom: 48px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #161002;
+      font-weight: 800;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--gold-2);
+      letter-spacing: 0.3px;
+    }
+
+    body.light .brand-title {
+      color: #8f6400;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    button, input, select {
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 9px 12px;
+      font-size: 14px;
+      background: var(--surface-2);
+      color: var(--text);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--gold);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.12s, opacity 0.15s, background 0.2s;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #161002;
+      border: none;
+      font-weight: 700;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.45);
+      color: #fca5a5;
+    }
+
+    body.light .btn-danger {
+      color: #b91c1c;
+    }
+
+    .btn-success {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.45);
+      color: #86efac;
+    }
+
+    body.light .btn-success {
+      color: #15803d;
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 20px auto;
+      padding: 0 14px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .auth-box {
+      max-width: 440px;
+      margin: 28px auto;
+    }
+
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .field input, .field select {
+      width: 100%;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    .dot.ok { background: var(--success); }
+    .dot.err { background: var(--danger); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .stat-label { font-size: 12px; color: var(--muted); }
+    .stat-val { font-size: 22px; font-weight: 800; color: var(--gold-2); margin-top: 4px; }
+    body.light .stat-val { color: #8f6400; }
+
+    .tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold), var(--gold-2));
+      color: #161002;
+      border: none;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th, td {
+      text-align: start;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+      background: var(--surface-2);
+    }
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    .badge-role {
+      background: rgba(245, 183, 0, 0.18);
+      color: var(--gold-2);
+    }
+
+    body.light .badge-role {
+      color: #8f6400;
+    }
+
+    .badge-active {
+      background: rgba(34, 197, 94, 0.18);
+      color: var(--success);
+    }
+
+    .badge-blocked {
+      background: rgba(239, 68, 68, 0.18);
+      color: var(--danger);
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .actions-row button {
+      padding: 5px 8px;
+      font-size: 12px;
+      border-radius: 8px;
+    }
+
+    .link-box {
+      background: var(--surface-2);
+      border: 1px dashed var(--gold);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .link-url {
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      color: var(--gold-2);
+    }
+
+    body.light .link-url { color: #7c5600; }
+
+    .toast {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--gold);
+      padding: 10px 18px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      z-index: 99;
+      font-size: 13px;
+      font-weight: 600;
+      display: none;
+    }
+
+    .toast.show { display: block; }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      z-index: 60;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">K</div>
+      <div>
+        <div class="brand-title" data-i18n="appTitle">KING SUPER MASTER PANEL</div>
+        <div class="brand-sub" id="modeSubtitle"></div>
+      </div>
+    </div>
+    <div class="controls">
+      <button type="button" class="btn-outline" id="langToggle">اردو</button>
+      <button type="button" class="btn-outline" id="themeToggle">Light</button>
+      <button type="button" class="btn-danger hidden" id="logoutBtn" data-i18n="logout">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- LOGIN SECTION -->
+    <section id="loginSection" class="card auth-box">
+      <div class="status-pill">
+        <span class="dot" id="dbDot"></span>
+        <span id="dbStatusText">Connecting...</span>
+      </div>
+
+      <h2 id="loginHeading" style="margin-bottom: 6px; font-size: 20px;">Panel Login</h2>
+      <p id="loginDesc" style="font-size: 13px; color: var(--muted); margin-bottom: 16px;"></p>
+
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginUsername" data-i18n="username">Username</label>
+          <input type="text" id="loginUsername" required autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="loginPassword" data-i18n="password">Password</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password" />
+        </div>
+        <button type="submit" class="btn-gold" style="width: 100%; padding: 11px;" id="loginSubmitBtn" data-i18n="signIn">Sign In</button>
+      </form>
+    </section>
+
+    <!-- DASHBOARD SECTION -->
+    <section id="dashboardSection" class="hidden">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="loggedUser">Logged In Account</div>
+          <div class="stat-val" id="currentUserLabel">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="roleLabel">Role</div>
+          <div class="stat-val" id="currentRoleLabel">-</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label" data-i18n="myPoints">Available Points</div>
+          <div class="stat-val" id="currentBalanceLabel">0</div>
+        </div>
+        <div class="stat-card" id="subCountCard">
+          <div class="stat-label" data-i18n="managedAccounts">Managed Accounts</div>
+          <div class="stat-val" id="managedCountLabel">0</div>
+        </div>
+      </div>
+
+      <!-- LINKS SHARE BOX (ADMIN / STAFF) -->
+      <div class="card" id="linksCard">
+        <h3 style="font-size: 16px; margin-bottom: 10px;" data-i18n="separateLinksTitle">Separate Panel Links</h3>
+        <div class="link-box">
+          <div>
+            <div style="font-size: 12px; color: var(--muted); font-weight: 700;" data-i18n="adminLinkLabel">Admin / Master / Agent Link</div>
+            <div class="link-url" id="adminLinkText"></div>
+          </div>
+          <button type="button" class="btn-outline" onclick="copyLink('admin')" data-i18n="copy">Copy</button>
+        </div>
+        <div class="link-box" style="margin-bottom: 0;">
+          <div>
+            <div style="font-size: 12px; color: var(--muted); font-weight: 700;" data-i18n="userLinkLabel">Users Only Link</div>
+            <div class="link-url" id="userLinkText"></div>
+          </div>
+          <button type="button" class="btn-outline" onclick="copyLink('user')" data-i18n="copy">Copy</button>
+        </div>
+      </div>
+
+      <!-- NAVIGATION TABS -->
+      <div class="tabs" id="staffTabs">
+        <button type="button" class="btn-outline tab-btn active" data-tab="accountsTab" onclick="switchTab('accountsTab')" data-i18n="accountsTab">Accounts</button>
+        <button type="button" class="btn-outline tab-btn" data-tab="createTab" onclick="switchTab('createTab')" data-i18n="createTab">Create Account</button>
+        <button type="button" class="btn-outline tab-btn" data-tab="txTab" onclick="switchTab('txTab')" data-i18n="txTab">Transactions</button>
+      </div>
+
+      <!-- TAB 1: ACCOUNTS LIST -->
+      <div id="accountsTab" class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <h3 style="font-size:16px;" data-i18n="accountsListTitle">Accounts List</h3>
+          <button type="button" class="btn-outline" onclick="refreshAll()" data-i18n="refresh">Refresh</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="username">Username</th>
+                <th data-i18n="roleLabel">Role</th>
+                <th data-i18n="parent">Parent</th>
+                <th data-i18n="points">Points</th>
+                <th data-i18n="status">Status</th>
+                <th data-i18n="actions">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accountsTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: CREATE ACCOUNT -->
+      <div id="createTab" class="card hidden">
+        <h3 style="font-size: 16px; margin-bottom: 14px;" data-i18n="createAccountTitle">Create Sub-Account</h3>
+        <form id="createAccountForm">
+          <div class="grid-2">
+            <div class="field">
+              <label for="newUsername" data-i18n="username">Username</label>
+              <input type="text" id="newUsername" required />
+            </div>
+            <div class="field">
+              <label for="newPassword" data-i18n="password">Password</label>
+              <input type="text" id="newPassword" required />
+            </div>
+            <div class="field">
+              <label for="newRole" data-i18n="roleLabel">Role</label>
+              <select id="newRole"></select>
+            </div>
+            <div class="field">
+              <label for="initialPoints" data-i18n="initialPoints">Initial Points</label>
+              <input type="number" id="initialPoints" min="0" step="any" value="0" />
+            </div>
+          </div>
+          <button type="submit" class="btn-gold" style="padding: 10px 18px;" data-i18n="createBtn">Create Account</button>
+        </form>
+      </div>
+
+      <!-- TAB 3: TRANSACTIONS -->
+      <div id="txTab" class="card">
+        <h3 style="font-size: 16px; margin-bottom: 12px;" data-i18n="txHistoryTitle">Transaction History</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th data-i18n="from">From</th>
+                <th data-i18n="to">To</th>
+                <th data-i18n="points">Points</th>
+                <th data-i18n="type">Type</th>
+                <th data-i18n="date">Date</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ACTION MODAL (DEPOSIT / WITHDRAW / RESET PASSWORD) -->
+  <div id="actionModal" class="modal-backdrop">
+    <div class="modal-card">
+      <h3 id="modalTitle" style="font-size: 17px; margin-bottom: 6px;"></h3>
+      <p id="modalTargetLabel" style="font-size: 13px; color: var(--muted); margin-bottom: 14px;"></p>
+      <form id="modalForm">
+        <div class="field" id="amountField">
+          <label for="modalAmount" data-i18n="points">Points</label>
+          <input type="number" id="modalAmount" min="0.01" step="any" />
+        </div>
+        <div class="field hidden" id="passField">
+          <label for="modalNewPassword" data-i18n="newPassword">New Password</label>
+          <input type="text" id="modalNewPassword" />
+        </div>
+        <div class="actions-row" style="justify-content: flex-end; margin-top: 14px;">
+          <button type="button" class="btn-outline" onclick="closeModal()" data-i18n="cancel">Cancel</button>
+          <button type="submit" class="btn-gold" id="modalSaveBtn" data-i18n="save">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const SUPABASE_URL = "https://lzkjfpjjaurdmlgicaqa.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6a2pmcGpqYXVyZG1sZ2ljYXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxNDkyNTEsImV4cCI6MjExMDcyNTI1MX0.bXUSL--F_ZdyTmk1TJKuOQTp4o7OFqTaNjAxfnQ3i3E";
+
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const I18N = {
+      en: {
+        appTitle: "KING SUPER MASTER PANEL",
+        logout: "Logout",
+        username: "Username",
+        password: "Password",
+        newPassword: "New Password",
+        signIn: "Sign In",
+        loggedUser: "Logged In Account",
+        roleLabel: "Role",
+        myPoints: "Available Points",
+        managedAccounts: "Managed Accounts",
+        separateLinksTitle: "Separate Panel Links",
+        adminLinkLabel: "Admin / Master / Agent Link",
+        userLinkLabel: "Users Only Link",
+        copy: "Copy",
+        copied: "Link copied",
+        accountsTab: "Accounts",
+        createTab: "Create Account",
+        txTab: "Transactions",
+        accountsListTitle: "Accounts List",
+        refresh: "Refresh",
+        parent: "Parent",
+        points: "Points",
+        status: "Status",
+        actions: "Actions",
+        createAccountTitle: "Create Sub-Account",
+        initialPoints: "Initial Points",
+        createBtn: "Create Account",
+        txHistoryTitle: "Transaction History",
+        from: "From",
+        to: "To",
+        type: "Type",
+        date: "Date",
+        cancel: "Cancel",
+        save: "Save",
+        deposit: "+ Deposit",
+        withdraw: "- Withdraw",
+        resetPass: "Reset Pass",
+        block: "Block",
+        unblock: "Unblock",
+        active: "active",
+        blocked: "blocked",
+        adminModeSub: "Admin / Super Master / Master / Agent Portal",
+        userModeSub: "User Portal",
+        adminLoginHeading: "Admin & Staff Login",
+        userLoginHeading: "User Login",
+        adminLoginDesc: "Sign in with your Super Master, Master, or Agent credentials.",
+        userLoginDesc: "Sign in with your User account credentials.",
+        wrongPanelRole: "Please use the matching panel link for your account role.",
+        invalidCreds: "Invalid username or password.",
+        accountBlocked: "This account is blocked.",
+        dbConnected: "Online Database Connected",
+        dbError: "Database Connection Issue",
+        createdSuccess: "Account created successfully",
+        updatedSuccess: "Updated successfully",
+        insufficientPoints: "Insufficient points balance",
+        enterValidAmount: "Enter a valid positive amount",
+        enterPassword: "Enter a new password"
+      },
+      ur: {
+        appTitle: "کنگ سپر ماسٹر پینل",
+        logout: "لاگ آؤٹ",
+        username: "یوزر نیم",
+        password: "پاس ورڈ",
+        newPassword: "نیا پاس ورڈ",
+        signIn: "لاگ ان کریں",
+        loggedUser: "موجودہ اکاؤنٹ",
+        roleLabel: "رول",
+        myPoints: "موجودہ پوائنٹس",
+        managedAccounts: "زیرِ نگرانی اکاؤنٹس",
+        separateLinksTitle: "الگ الگ پینل لنکس",
+        adminLinkLabel: "ایڈمن / ماسٹر / ایجنٹ لنک",
+        userLinkLabel: "صرف یوزرز کا لنک",
+        copy: "کاپی کریں",
+        copied: "لنک کاپی ہو گیا",
+        accountsTab: "اکاؤنٹس",
+        createTab: "نیا اکاؤنٹ بنائیں",
+        txTab: "ٹرانزیکشنز",
+        accountsListTitle: "اکاؤنٹس کی فہرست",
+        refresh: "تازہ کریں",
+        parent: "پیرنٹ",
+        points: "پوائنٹس",
+        status: "اسٹیٹس",
+        actions: "کارروائی",
+        createAccountTitle: "نیا ماتحت اکاؤنٹ بنائیں",
+        initialPoints: "ابتدائی پوائنٹس",
+        createBtn: "اکاؤنٹ بنائیں",
+        txHistoryTitle: "لین دین کی تاریخ",
+        from: "منجانب",
+        to: "بنام",
+        type: "قسم",
+        date: "تاریخ",
+        cancel: "منسوخ",
+        save: "محفوظ کریں",
+        deposit: "+ ڈپازٹ",
+        withdraw: "- ودڈرا",
+        resetPass: "پاس ورڈ ری سیٹ",
+        block: "بلاک",
+        unblock: "ان بلاک",
+        active: "فعال",
+        blocked: "بلاک",
+        adminModeSub: "ایڈمن / سپر ماسٹر / ماسٹر / ایجنٹ پورٹل",
+        userModeSub: "یوزر پورٹل",
+        adminLoginHeading: "ایڈمن و اسٹاف لاگ ان",
+        userLoginHeading: "یوزر لاگ ان",
+        adminLoginDesc: "اپنے سپر ماسٹر، ماسٹر یا ایجنٹ اکاؤنٹ سے لاگ ان کریں۔",
+        userLoginDesc: "اپنے یوزر اکاؤنٹ کا یوزر نیم اور پاس ورڈ درج کریں۔",
+        wrongPanelRole: "براہ کرم اپنے اکاؤنٹ کے مطابق صحیح لنک استعمال کریں۔",
+        invalidCreds: "غلط یوزر نیم یا پاس ورڈ۔",
+        accountBlocked: "یہ اکاؤنٹ بلاک ہے۔",
+        dbConnected: "آن لائن ڈیٹا بیس منسلک ہے",
+        dbError: "ڈیٹا بیس کنکشن میں مسئلہ",
+        createdSuccess: "اکاؤنٹ کامیابی سے بن گیا",
+        updatedSuccess: "کامیابی سے اپڈیٹ ہو گیا",
+        insufficientPoints: "آپ کے پاس کافی پوائنٹس موجود نہیں ہیں",
+        enterValidAmount: "درست رقم درج کریں",
+        enterPassword: "نیا پاس ورڈ درج کریں"
+      }
+    };
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const panelMode = urlParams.get("panel") === "user" ? "user" : "admin";
+
+    let lang = localStorage.getItem("ksm_lang") || "en";
+    let theme = localStorage.getItem("ksm_theme") || "dark";
+    let currentUser = null;
+    let allAccounts = [];
+    let allTransactions = [];
+    let modalContext = null;
+
+    function t(key) {
+      return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+    }
+
+    function applyLanguage() {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+      document.getElementById("langToggle").textContent = lang === "ur" ? "EN" : "اردو";
+
+      document.querySelectorAll("[data-i18n]").forEach((el) => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = t(key);
+      });
+
+      document.getElementById("modeSubtitle").textContent =
+        panelMode === "user" ? t("userModeSub") : t("adminModeSub");
+      document.getElementById("loginHeading").textContent =
+        panelMode === "user" ? t("userLoginHeading") : t("adminLoginHeading");
+      document.getElementById("loginDesc").textContent =
+        panelMode === "user" ? t("userLoginDesc") : t("adminLoginDesc");
+
+      updateLinkBoxes();
+      if (currentUser) {
+        renderRoleOptions();
+        renderDashboard();
+      }
+    }
+
+    function applyTheme() {
+      if (theme === "light") {
+        document.body.classList.add("light");
+        document.getElementById("themeToggle").textContent = "Dark";
+      } else {
+        document.body.classList.remove("light");
+        document.getElementById("themeToggle").textContent = "Light";
+      }
+    }
+
+    function updateLinkBoxes() {
+      const base = window.location.origin + window.location.pathname;
+      document.getElementById("adminLinkText").textContent = base + "?panel=admin";
+      document.getElementById("userLinkText").textContent = base + "?panel=user";
+    }
+
+    function copyLink(type) {
+      const text = type === "user"
+        ? document.getElementById("userLinkText").textContent
+        : document.getElementById("adminLinkText").textContent;
+      navigator.clipboard.writeText(text).then(() => showToast(t("copied")));
+    }
+
+    async function ensureSeedSuperUser() {
+      try {
+        const { data, error } = await sb
+          .from("panel_accounts")
+          .select("id")
+          .eq("username", "Kehar")
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (!data) {
+          await sb.from("panel_accounts").insert([{
+            username: "Kehar",
+            password: "Khan@5244",
+            role: "super",
+            parent_username: "SYSTEM",
+            balance: 1000000,
+            status: "active"
+          }]);
+        }
+
+        document.getElementById("dbDot").className = "dot ok";
+        document.getElementById("dbStatusText").textContent = t("dbConnected");
+      } catch (err) {
+        document.getElementById("dbDot").className = "dot err";
+        document.getElementById("dbStatusText").textContent = t("dbError");
+      }
+    }
+
+    document.getElementById("langToggle").addEventListener("click", () => {
+      lang = lang === "en" ? "ur" : "en";
+      localStorage.setItem("ksm_lang", lang);
+      applyLanguage();
+    });
+
+    document.getElementById("themeToggle").addEventListener("click", () => {
+      theme = theme === "dark" ? "light" : "dark";
+      localStorage.setItem("ksm_theme", theme);
+      applyTheme();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      currentUser = null;
+      sessionStorage.removeItem("ksm_session_user");
+      document.getElementById("dashboardSection").classList.add("hidden");
+      document.getElementById("logoutBtn").classList.add("hidden");
+      document.getElementById("loginSection").classList.remove("hidden");
+      document.getElementById("loginForm").reset();
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("loginUsername").value.trim();
+      const password = document.getElementById("loginPassword").value;
+
+      const { data, error } = await sb
+        .from("panel_accounts")
+        .select("*")
+        .ilike("username", username)
+        .maybeSingle();
+
+      if (error || !data || data.password !== password) {
+        showToast(t("invalidCreds"));
+        return;
+      }
+
+      if (data.status !== "active") {
+        showToast(t("accountBlocked"));
+        return;
+      }
+
+      if (panelMode === "user" && data.role !== "user") {
+        showToast(t("wrongPanelRole"));
+        return;
+      }
+
+      if (panelMode === "admin" && data.role === "user") {
+        showToast(t("wrongPanelRole"));
+        return;
+      }
+
+      currentUser = data;
+      sessionStorage.setItem("ksm_session_user", JSON.stringify({ id: data.id, panelMode }));
+      await enterDashboard();
+    });
+
+    async function enterDashboard() {
+      document.getElementById("loginSection").classList.add("hidden");
+      document.getElementById("dashboardSection").classList.remove("hidden");
+      document.getElementById("logoutBtn").classList.remove("hidden");
+
+      const isUserOnly = currentUser.role === "user";
+      document.getElementById("linksCard").classList.toggle("hidden", isUserOnly);
+      document.getElementById("staffTabs").classList.toggle("hidden", isUserOnly);
+      document.getElementById("accountsTab").classList.toggle("hidden", isUserOnly);
+      document.getElementById("createTab").classList.add("hidden");
+      document.getElementById("subCountCard").classList.toggle("hidden", isUserOnly);
+      document.getElementById("txTab").classList.remove("hidden");
+
+      renderRoleOptions();
+      await refreshAll();
+    }
+
+    function renderRoleOptions() {
+      if (!currentUser) return;
+      const sel = document.getElementById("newRole");
+      sel.innerHTML = "";
+      let roles = [];
+      if (currentUser.role === "super") roles = ["master", "agent", "user"];
+      else if (currentUser.role === "master") roles = ["agent", "user"];
+      else if (currentUser.role === "agent") roles = ["user"];
+
+      roles.forEach((r) => {
+        const opt = document.createElement("option");
+        opt.value = r;
+        opt.textContent = r.toUpperCase();
+        sel.appendChild(opt);
+      });
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll(".tab-btn").forEach((b) => {
+        b.classList.toggle("active", b.getAttribute("data-tab") === tabId);
+      });
+      ["accountsTab", "createTab", "txTab"].forEach((id) => {
+        document.getElementById(id).classList.toggle("hidden", id !== tabId);
+      });
+    }
+
+    async function refreshAll() {
+      if (!currentUser) return;
+
+      const { data: freshMe } = await sb
+        .from("panel_accounts")
+        .select("*")
+        .eq("id", currentUser.id)
+        .single();
+
+      if (freshMe) currentUser = freshMe;
+
+      const { data: accs } = await sb
+        .from("panel_accounts")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      const { data: txs } = await sb
+        .from("panel_transactions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(100);
+
+      allAccounts = accs || [];
+      allTransactions = txs || [];
+      renderDashboard();
+    }
+
+    function getVisibleSubAccounts() {
+      if (currentUser.role === "super") {
+        return allAccounts.filter((a) => a.id !== currentUser.id);
+      }
+      if (currentUser.role === "master") {
+        const myAgents = allAccounts
+          .filter((a) => a.role === "agent" && a.parent_username === currentUser.username)
+          .map((a) => a.username);
+        return allAccounts.filter(
+          (a) =>
+            a.parent_username === currentUser.username ||
+            (a.role === "user" && myAgents.includes(a.parent_username))
+        );
+      }
+      if (currentUser.role === "agent") {
+        return allAccounts.filter((a) => a.parent_username === currentUser.username);
+      }
+      return [];
+    }
+
+    function renderDashboard() {
+      document.getElementById("currentUserLabel").textContent = currentUser.username;
+      document.getElementById("currentRoleLabel").textContent = currentUser.role.toUpperCase();
+      document.getElementById("currentBalanceLabel").textContent = Number(currentUser.balance || 0).toLocaleString();
+
+      const subs = getVisibleSubAccounts();
+      document.getElementById("managedCountLabel").textContent = subs.length;
+
+      const tbody = document.getElementById("accountsTableBody");
+      tbody.innerHTML = "";
+
+      subs.forEach((acc) => {
+        const tr = document.createElement("tr");
+        const statusText = acc.status === "active" ? t("active") : t("blocked");
+        const statusClass = acc.status === "active" ? "badge-active" : "badge-blocked";
+        const toggleBtnLabel = acc.status === "active" ? t("block") : t("unblock");
+
+        tr.innerHTML = `
+          <td><strong>${escapeHtml(acc.username)}</strong></td>
+          <td><span class="badge badge-role">${escapeHtml(acc.role.toUpperCase())}</span></td>
+          <td>${escapeHtml(acc.parent_username || "-")}</td>
+          <td><strong>${Number(acc.balance || 0).toLocaleString()}</strong></td>
+          <td><span class="badge ${statusClass}">${statusText}</span></td>
+          <td>
+            <div class="actions-row">
+              <button type="button" class="btn-success" onclick="openModal('deposit', '${acc.id}')">${t("deposit")}</button>
+              <button type="button" class="btn-outline" onclick="openModal('withdraw', '${acc.id}')">${t("withdraw")}</button>
+              <button type="button" class="btn-outline" onclick="openModal('resetPass', '${acc.id}')">${t("resetPass")}</button>
+              <button type="button" class="btn-danger" onclick="toggleBlock('${acc.id}')">${toggleBtnLabel}</button>
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const txBody = document.getElementById("txTableBody");
+      txBody.innerHTML = "";
+
+      const visibleTxs = currentUser.role === "super"
+        ? allTransactions
+        : allTransactions.filter(
+            (tx) => tx.from_user === currentUser.username || tx.to_user === currentUser.username
+          );
+
+      visibleTxs.forEach((tx) => {
+        const tr = document.createElement("tr");
+        const d = tx.created_at ? new Date(tx.created_at).toLocaleString() : "-";
+        tr.innerHTML = `
+          <td>${escapeHtml(tx.from_user)}</td>
+          <td>${escapeHtml(tx.to_user)}</td>
+          <td><strong>${Number(tx.amount || 0).toLocaleString()}</strong></td>
+          <td>${escapeHtml(tx.tx_type)}</td>
+          <td>${escapeHtml(d)}</td>
+        `;
+        txBody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("createAccountForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("newUsername").value.trim();
+      const password = document.getElementById("newPassword").value;
+      const role = document.getElementById("newRole").value;
+      const initPts = Number(document.getElementById("initialPoints").value || 0);
+
+      if (!username || !password || initPts < 0) return;
+
+      const exists = allAccounts.some((a) => a.username.toLowerCase() === username.toLowerCase());
+      if (exists) {
+        showToast("Username already exists");
+        return;
+      }
+
+      if (Number(currentUser.balance || 0) < initPts) {
+        showToast(t("insufficientPoints"));
+        return;
+      }
+
+      const { error: insertErr } = await sb.from("panel_accounts").insert([{
+        username,
+        password,
+        role,
+        parent_username: currentUser.username,
+        balance: initPts,
+        status: "active"
+      }]);
+
+      if (insertErr) {
+        showToast(insertErr.message);
+        return;
+      }
+
+      if (initPts > 0) {
+        const nextBal = Number(currentUser.balance || 0) - initPts;
+        await sb.from("panel_accounts").update({ balance: nextBal }).eq("id", currentUser.id);
+        await sb.from("panel_transactions").insert([{
+          from_user: currentUser.username,
+          to_user: username,
+          amount: initPts,
+          tx_type: "INITIAL_TRANSFER",
+          note: `Created ${role}`
+        }]);
+      }
+
+      document.getElementById("createAccountForm").reset();
+      document.getElementById("initialPoints").value = "0";
+      showToast(t("createdSuccess"));
+      switchTab("accountsTab");
+      await refreshAll();
+    });
+
+    function openModal(type, targetId) {
+      const target = allAccounts.find((a) => a.id === targetId);
+      if (!target) return;
+      modalContext = { type, target };
+
+      document.getElementById("modalTargetLabel").textContent =
+        `${target.username} (${target.role.toUpperCase()}) — ${Number(target.balance || 0).toLocaleString()}`;
+
+      const amtField = document.getElementById("amountField");
+      const passField = document.getElementById("passField");
+      document.getElementById("modalAmount").value = "";
+      document.getElementById("modalNewPassword").value = "";
+
+      if (type === "deposit") {
+        document.getElementById("modalTitle").textContent = t("deposit");
+        amtField.classList.remove("hidden");
+        passField.classList.add("hidden");
+      } else if (type === "withdraw") {
+        document.getElementById("modalTitle").textContent = t("withdraw");
+        amtField.classList.remove("hidden");
+        passField.classList.add("hidden");
+      } else if (type === "resetPass") {
+        document.getElementById("modalTitle").textContent = t("resetPass");
+        amtField.classList.add("hidden");
+        passField.classList.remove("hidden");
+      }
+
+      document.getElementById("actionModal").classList.add("open");
+    }
+
+    function closeModal() {
+      modalContext = null;
+      document.getElementById("actionModal").classList.remove("open");
+    }
+
+    document.getElementById("modalForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!modalContext) return;
+      const { type, target } = modalContext;
+
+      if (type === "resetPass") {
+        const newPass = document.getElementById("modalNewPassword").value;
+        if (!newPass) {
+          showToast(t("enterPassword"));
+          return;
+        }
+        await sb.from("panel_accounts").update({ password: newPass }).eq("id", target.id);
+        closeModal();
+        showToast(t("updatedSuccess"));
+        await refreshAll();
+        return;
+      }
+
+      const amount = Number(document.getElementById("modalAmount").value);
+      if (!amount || amount <= 0) {
+        showToast(t("enterValidAmount"));
+        return;
+      }
+
+      if (type === "deposit") {
+        if (Number(currentUser.balance || 0) < amount) {
+          showToast(t("insufficientPoints"));
+          return;
+        }
+        await sb.from("panel_accounts")
+          .update({ balance: Number(currentUser.balance || 0) - amount })
+          .eq("id", currentUser.id);
+
+        await sb.from("panel_accounts")
+          .update({ balance: Number(target.balance || 0) + amount })
+          .eq("id", target.id);
+
+        await sb.from("panel_transactions").insert([{
+          from_user: currentUser.username,
+          to_user: target.username,
+          amount,
+          tx_type: "DEPOSIT",
+          note: "Deposit"
+        }]);
+      } else if (type === "withdraw") {
+        if (Number(target.balance || 0) < amount) {
+          showToast(t("insufficientPoints"));
+          return;
+        }
+        await sb.from("panel_accounts")
+          .update({ balance: Number(target.balance || 0) - amount })
+          .eq("id", target.id);
+
+        await sb.from("panel_accounts")
+          .update({ balance: Number(currentUser.balance || 0) + amount })
+          .eq("id", currentUser.id);
+
+        await sb.from("panel_transactions").insert([{
+          from_user: target.username,
+          to_user: currentUser.username,
+          amount,
+          tx_type: "WITHDRAW",
+          note: "Withdraw"
+        }]);
+      }
+
+      closeModal();
+      showToast(t("updatedSuccess"));
+      await refreshAll();
+    });
+
+    async function toggleBlock(targetId) {
+      const target = allAccounts.find((a) => a.id === targetId);
+      if (!target) return;
+      const nextStatus = target.status === "active" ? "blocked" : "active";
+      await sb.from("panel_accounts").update({ status: nextStatus }).eq("id", target.id);
+      showToast(t("updatedSuccess"));
+      await refreshAll();
+    }
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    (async function init() {
+      applyTheme();
+      applyLanguage();
+      await ensureSeedSuperUser();
+
+      const saved = sessionStorage.getItem("ksm_session_user");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.id && parsed.panelMode === panelMode) {
+            const { data } = await sb
+              .from("panel_accounts")
+              .select("*")
+              .eq("id", parsed.id)
+              .maybeSingle();
+            if (data && data.status === "active") {
+              currentUser = data;
+              await enterDashboard();
+            }
+          }
+        } catch (_) {}
+      }
+    })();
+  </script>
+</body>
+</html>
