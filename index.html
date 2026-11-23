@@ -3,1193 +3,892 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KING SUPER MASTER PANEL</title>
+  <title>KING SUPER EXCH - Full Exchange & Admin Suite</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg: #0c0a05;
-      --surface: #161209;
-      --surface-2: #211b0e;
-      --text: #fff8e6;
-      --muted: #cbb88a;
+      --bg: #0f0e09;
+      --card: #1a170d;
+      --card-2: #242012;
+      --text: #fff9eb;
+      --muted: #cbb988;
       --gold: #f5b700;
-      --gold-2: #ffd54f;
-      --border: rgba(245, 183, 0, 0.25);
+      --gold-soft: rgba(245, 183, 0, 0.16);
+      --border: rgba(245, 183, 0, 0.28);
+      --back: #72bbef;
+      --back-text: #081826;
+      --lay: #faa9ba;
+      --lay-text: #2b0912;
+      --live: #22c55e;
       --danger: #ef4444;
-      --success: #22c55e;
-      --shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
     }
 
     body.light {
-      --bg: #fffdf6;
-      --surface: #ffffff;
-      --surface-2: #fff6db;
-      --text: #1c1506;
-      --muted: #6b592b;
-      --gold: #d99b00;
-      --gold-2: #f5b700;
-      --border: rgba(217, 155, 0, 0.28);
-      --danger: #dc2626;
-      --success: #16a34a;
-      --shadow: 0 10px 24px rgba(130, 92, 0, 0.12);
+      --bg: #f7f3e8;
+      --card: #ffffff;
+      --card-2: #f2ebda;
+      --text: #1b180e;
+      --muted: #655c43;
+      --gold: #d49600;
+      --gold-soft: rgba(212, 150, 0, 0.14);
+      --border: rgba(212, 150, 0, 0.34);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", sans-serif; }
+    * { box-sizing: border-box; }
 
     body {
+      margin: 0;
+      font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      transition: background 0.2s, color 0.2s;
-      padding-bottom: 48px;
+      padding: 10px;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
     }
 
     .topbar {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      box-shadow: var(--shadow);
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
     }
 
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-badge {
-      width: 38px;
-      height: 38px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--gold), var(--gold-2));
-      color: #161002;
-      font-weight: 800;
-      display: grid;
-      place-items: center;
       font-size: 18px;
+      font-weight: bold;
+      color: var(--gold);
     }
 
-    .brand-title {
-      font-weight: 800;
-      font-size: 16px;
-      color: var(--gold-2);
-      letter-spacing: 0.3px;
-    }
-
-    body.light .brand-title {
-      color: #8f6400;
-    }
-
-    .brand-sub {
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    .controls {
+    .wallet-bar {
       display: flex;
       align-items: center;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 6px;
+      font-size: 12px;
     }
 
-    button, input, select {
-      border-radius: 10px;
+    .pill {
+      background: var(--card-2);
       border: 1px solid var(--border);
-      padding: 9px 12px;
-      font-size: 14px;
-      background: var(--surface-2);
-      color: var(--text);
-      outline: none;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: bold;
     }
 
-    input:focus, select:focus {
+    .pill.exp { color: #fca5a5; }
+
+    button {
+      border: 1px solid var(--border);
+      background: var(--gold-soft);
+      color: var(--text);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    button.gold {
+      background: var(--gold);
+      color: #11100b;
       border-color: var(--gold);
     }
 
-    button {
-      cursor: pointer;
-      font-weight: 600;
-      transition: transform 0.12s, opacity 0.15s, background 0.2s;
-    }
-
-    button:active { transform: scale(0.98); }
-
-    .btn-gold {
-      background: linear-gradient(135deg, var(--gold), var(--gold-2));
-      color: #161002;
-      border: none;
-      font-weight: 700;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text);
-    }
-
-    .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
-      border-color: rgba(239, 68, 68, 0.45);
+    button.danger {
+      background: rgba(239, 68, 68, 0.18);
       color: #fca5a5;
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
-    body.light .btn-danger {
-      color: #b91c1c;
+    .main-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 10px;
     }
 
-    .btn-success {
-      background: rgba(34, 197, 94, 0.15);
-      border-color: rgba(34, 197, 94, 0.45);
-      color: #86efac;
+    @media (max-width: 720px) {
+      .main-tabs { grid-template-columns: repeat(2, 1fr); }
     }
 
-    body.light .btn-success {
-      color: #15803d;
+    .main-tabs button.active {
+      background: var(--gold);
+      color: #11100b;
     }
 
-    .container {
-      max-width: 1040px;
-      margin: 20px auto;
-      padding: 0 14px;
-    }
+    .tab-section { display: none; }
+    .tab-section.active { display: block; }
 
     .card {
-      background: var(--surface);
+      background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-      margin-bottom: 16px;
-    }
-
-    .auth-box {
-      max-width: 440px;
-      margin: 28px auto;
-    }
-
-    .field {
-      margin-bottom: 14px;
-    }
-
-    .field label {
-      display: block;
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-
-    .field input, .field select {
-      width: 100%;
-    }
-
-    .status-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      margin-bottom: 12px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-
-    .dot.ok { background: var(--success); }
-    .dot.err { background: var(--danger); }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-
-    .stat-card {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .stat-label { font-size: 12px; color: var(--muted); }
-    .stat-val { font-size: 22px; font-weight: 800; color: var(--gold-2); margin-top: 4px; }
-    body.light .stat-val { color: #8f6400; }
-
-    .tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 16px;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(135deg, var(--gold), var(--gold-2));
-      color: #161002;
-      border: none;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th, td {
-      text-align: start;
-      padding: 10px 10px;
-      border-bottom: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    th {
-      color: var(--muted);
-      font-weight: 700;
-      background: var(--surface-2);
-    }
-
-    .badge {
-      padding: 3px 8px;
-      border-radius: 8px;
-      font-size: 11px;
-      font-weight: 700;
-      display: inline-block;
-    }
-
-    .badge-role {
-      background: rgba(245, 183, 0, 0.18);
-      color: var(--gold-2);
-    }
-
-    body.light .badge-role {
-      color: #8f6400;
-    }
-
-    .badge-active {
-      background: rgba(34, 197, 94, 0.18);
-      color: var(--success);
-    }
-
-    .badge-blocked {
-      background: rgba(239, 68, 68, 0.18);
-      color: var(--danger);
-    }
-
-    .actions-row {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .actions-row button {
-      padding: 5px 8px;
-      font-size: 12px;
-      border-radius: 8px;
-    }
-
-    .link-box {
-      background: var(--surface-2);
-      border: 1px dashed var(--gold);
       border-radius: 12px;
       padding: 12px;
       margin-bottom: 10px;
+    }
+
+    .card-head {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-weight: bold;
+      font-size: 13px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .live-badge {
+      background: rgba(34, 197, 94, 0.16);
+      color: var(--live);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 11px;
+    }
+
+    .score-banner {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .balls-strip {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .ball-dot {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .market-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .market-row:last-child { border-bottom: none; }
+
+    .rate-btn {
+      border: none;
+      border-radius: 6px;
+      padding: 7px 6px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .rate-btn.back { background: var(--back); color: var(--back-text); }
+    .rate-btn.lay { background: var(--lay); color: var(--lay-text); }
+    .rate-main { display: block; font-size: 14px; font-weight: bold; }
+    .rate-vol { display: block; font-size: 10px; opacity: 0.85; }
+
+    .suspended-box {
+      grid-column: span 2;
+      background: rgba(239, 68, 68, 0.16);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 6px;
+      padding: 7px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .slip-box {
+      background: var(--card);
+      border: 2px solid var(--gold);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .slip-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin: 8px 0;
+    }
+
+    @media (max-width: 560px) {
+      .slip-grid { grid-template-columns: 1fr; }
+    }
+
+    input, select {
+      width: 100%;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--card-2);
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .quick-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .list-item {
+      background: var(--card-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
       gap: 8px;
     }
 
-    .link-url {
-      font-family: monospace;
-      font-size: 12px;
-      word-break: break-all;
-      color: var(--gold-2);
-    }
-
-    body.light .link-url { color: #7c5600; }
-
-    .toast {
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--gold);
-      padding: 10px 18px;
-      border-radius: 12px;
-      box-shadow: var(--shadow);
-      z-index: 99;
-      font-size: 13px;
-      font-weight: 600;
-      display: none;
-    }
-
-    .toast.show { display: block; }
-
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.65);
-      display: none;
+    .mini-actions {
+      display: flex;
+      gap: 6px;
       align-items: center;
-      justify-content: center;
-      padding: 14px;
-      z-index: 60;
+      flex-wrap: wrap;
     }
 
-    .modal-backdrop.open { display: flex; }
-
-    .modal-card {
-      width: 100%;
-      max-width: 400px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: var(--shadow);
+    .mini-actions button {
+      padding: 5px 8px;
+      font-size: 11px;
     }
 
-    .hidden { display: none !important; }
+    .note {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="brand-badge">K</div>
-      <div>
-        <div class="brand-title" data-i18n="appTitle">KING SUPER MASTER PANEL</div>
-        <div class="brand-sub" id="modeSubtitle"></div>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">KING SUPER EXCH</div>
+      <div class="wallet-bar">
+        <span class="pill" id="activeIdPill">ID: super_kehar</span>
+        <span class="pill" id="balPill">Balance: 1500</span>
+        <span class="pill exp" id="expPill">Exp: 0</span>
+        <button id="langBtn" onclick="toggleLang()">اردو</button>
+        <button id="themeBtn" onclick="toggleTheme()">Light</button>
       </div>
     </div>
-    <div class="controls">
-      <button type="button" class="btn-outline" id="langToggle">اردو</button>
-      <button type="button" class="btn-outline" id="themeToggle">Light</button>
-      <button type="button" class="btn-danger hidden" id="logoutBtn" data-i18n="logout">Logout</button>
+
+    <div class="main-tabs">
+      <button class="active" id="tabBtnExch" onclick="switchTab('exch')">Exchange Match</button>
+      <button id="tabBtnBall" onclick="switchTab('ball')">Ball-by-Ball</button>
+      <button id="tabBtnCasino" onclick="switchTab('casino')">Live Casino</button>
+      <button id="tabBtnAdmin" onclick="switchTab('admin')">Super / Master IDs</button>
+      <button id="tabBtnStatement" onclick="switchTab('statement')">Statement & Rules</button>
     </div>
-  </header>
 
-  <main class="container">
-    <!-- LOGIN SECTION -->
-    <section id="loginSection" class="card auth-box">
-      <div class="status-pill">
-        <span class="dot" id="dbDot"></span>
-        <span id="dbStatusText">Connecting...</span>
+    <!-- 1. EXCHANGE MATCH -->
+    <div id="sec-exch" class="tab-section active">
+      <div class="card">
+        <div class="card-head">
+          <span id="exchMatchTitle">NEW ZEALAND V INDIA • International Exchange</span>
+          <div class="mini-actions">
+            <span class="live-badge" id="liveBadge1">LIVE</span>
+            <button onclick="toggleSuspendBookmaker()" id="btnSuspendBm">Toggle BM Suspend</button>
+          </div>
+        </div>
+        <div class="score-banner">
+          <span id="teamALbl">New Zealand</span>
+          <span style="color:var(--gold);" id="liveScoreTxt">195/5 (85.5 Ov)</span>
+          <span id="teamBLbl">India</span>
+        </div>
+        <div class="balls-strip" id="recentBallsStrip"></div>
       </div>
 
-      <h2 id="loginHeading" style="margin-bottom: 6px; font-size: 20px;">Panel Login</h2>
-      <p id="loginDesc" style="font-size: 13px; color: var(--muted); margin-bottom: 16px;"></p>
-
-      <form id="loginForm">
-        <div class="field">
-          <label for="loginUsername" data-i18n="username">Username</label>
-          <input type="text" id="loginUsername" required autocomplete="username" />
+      <div class="card">
+        <div class="card-head">
+          <span>MATCH_ODDS</span>
+          <span>BACK (Blue) / LAY (Pink)</span>
         </div>
-        <div class="field">
-          <label for="loginPassword" data-i18n="password">Password</label>
-          <input type="password" id="loginPassword" required autocomplete="current-password" />
-        </div>
-        <button type="submit" class="btn-gold" style="width: 100%; padding: 11px;" id="loginSubmitBtn" data-i18n="signIn">Sign In</button>
-      </form>
-    </section>
-
-    <!-- DASHBOARD SECTION -->
-    <section id="dashboardSection" class="hidden">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label" data-i18n="loggedUser">Logged In Account</div>
-          <div class="stat-val" id="currentUserLabel">-</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label" data-i18n="roleLabel">Role</div>
-          <div class="stat-val" id="currentRoleLabel">-</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label" data-i18n="myPoints">Available Points</div>
-          <div class="stat-val" id="currentBalanceLabel">0</div>
-        </div>
-        <div class="stat-card" id="subCountCard">
-          <div class="stat-label" data-i18n="managedAccounts">Managed Accounts</div>
-          <div class="stat-val" id="managedCountLabel">0</div>
-        </div>
+        <div id="oddsRows"></div>
       </div>
 
-      <!-- LINKS SHARE BOX (ADMIN / STAFF) -->
-      <div class="card" id="linksCard">
-        <h3 style="font-size: 16px; margin-bottom: 10px;" data-i18n="separateLinksTitle">Separate Panel Links</h3>
-        <div class="link-box">
+      <div class="card">
+        <div class="card-head">
+          <span>Bookmaker</span>
+          <span>0% Commission Demo</span>
+        </div>
+        <div id="bmRows"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <span>Normal / Session (No / Yes)</span>
+          <span>NO (Pink) / YES (Blue)</span>
+        </div>
+        <div id="sessionRows"></div>
+      </div>
+
+      <div class="slip-box">
+        <div class="card-head" style="margin-bottom:4px;">
+          <span id="slipHead">MATCH_ODDS • New Zealand (BACK)</span>
+          <span id="estProfitTxt">Est. Profit: 425</span>
+        </div>
+        <div class="slip-grid">
           <div>
-            <div style="font-size: 12px; color: var(--muted); font-weight: 700;" data-i18n="adminLinkLabel">Admin / Master / Agent Link</div>
-            <div class="link-url" id="adminLinkText"></div>
+            <div class="note" id="lblSlipOdds">Odds / Rate</div>
+            <input type="number" id="slipOdds" step="0.01" value="1.85" oninput="updateSlipProfit()" />
           </div>
-          <button type="button" class="btn-outline" onclick="copyLink('admin')" data-i18n="copy">Copy</button>
-        </div>
-        <div class="link-box" style="margin-bottom: 0;">
           <div>
-            <div style="font-size: 12px; color: var(--muted); font-weight: 700;" data-i18n="userLinkLabel">Users Only Link</div>
-            <div class="link-url" id="userLinkText"></div>
+            <div class="note" id="lblSlipStake">Amount</div>
+            <input type="number" id="slipStake" value="500" oninput="updateSlipProfit()" />
           </div>
-          <button type="button" class="btn-outline" onclick="copyLink('user')" data-i18n="copy">Copy</button>
         </div>
+        <div class="quick-row">
+          <button onclick="addStake(100)">+100</button>
+          <button onclick="addStake(500)">+500</button>
+          <button onclick="addStake(1000)">+1k</button>
+          <button onclick="resetWallet()">Reset</button>
+        </div>
+        <button class="gold" style="width:100%;" id="btnPlaceBet" onclick="placeExchBet()">Place Bet (Demo)</button>
+        <div class="note" id="exchStatus">Click any Blue (Back) or Pink (Lay) box to place a demo bet.</div>
       </div>
 
-      <!-- NAVIGATION TABS -->
-      <div class="tabs" id="staffTabs">
-        <button type="button" class="btn-outline tab-btn active" data-tab="accountsTab" onclick="switchTab('accountsTab')" data-i18n="accountsTab">Accounts</button>
-        <button type="button" class="btn-outline tab-btn" data-tab="createTab" onclick="switchTab('createTab')" data-i18n="createTab">Create Account</button>
-        <button type="button" class="btn-outline tab-btn" data-tab="txTab" onclick="switchTab('txTab')" data-i18n="txTab">Transactions</button>
-      </div>
-
-      <!-- TAB 1: ACCOUNTS LIST -->
-      <div id="accountsTab" class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
-          <h3 style="font-size:16px;" data-i18n="accountsListTitle">Accounts List</h3>
-          <button type="button" class="btn-outline" onclick="refreshAll()" data-i18n="refresh">Refresh</button>
+      <div class="card">
+        <div class="card-head">
+          <span id="matchedHead">MATCHED BET (0)</span>
+          <button onclick="settleMatchedBets('WIN')" id="btnSettleWin">Settle Demo Win</button>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="username">Username</th>
-                <th data-i18n="roleLabel">Role</th>
-                <th data-i18n="parent">Parent</th>
-                <th data-i18n="points">Points</th>
-                <th data-i18n="status">Status</th>
-                <th data-i18n="actions">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="accountsTableBody"></tbody>
-          </table>
-        </div>
+        <div id="matchedBetsList"></div>
       </div>
+    </div>
 
-      <!-- TAB 2: CREATE ACCOUNT -->
-      <div id="createTab" class="card hidden">
-        <h3 style="font-size: 16px; margin-bottom: 14px;" data-i18n="createAccountTitle">Create Sub-Account</h3>
-        <form id="createAccountForm">
-          <div class="grid-2">
-            <div class="field">
-              <label for="newUsername" data-i18n="username">Username</label>
-              <input type="text" id="newUsername" required />
-            </div>
-            <div class="field">
-              <label for="newPassword" data-i18n="password">Password</label>
-              <input type="text" id="newPassword" required />
-            </div>
-            <div class="field">
-              <label for="newRole" data-i18n="roleLabel">Role</label>
-              <select id="newRole"></select>
-            </div>
-            <div class="field">
-              <label for="initialPoints" data-i18n="initialPoints">Initial Points</label>
-              <input type="number" id="initialPoints" min="0" step="any" value="0" />
-            </div>
+    <!-- 2. BALL BY BALL -->
+    <div id="sec-ball" class="tab-section">
+      <div class="card">
+        <div class="card-head">
+          <span id="ballTitle">Ball-by-Ball Live Commentary & Score</span>
+          <button class="gold" id="nextBallBtn" onclick="stepSingleBall()">Next Ball</button>
+        </div>
+        <div class="score-banner">
+          <span>Karachi vs Lahore</span>
+          <span style="color:var(--gold);" id="t20ScoreTxt">142/3 (15.2 Ov)</span>
+          <span id="crrTxt">CRR: 9.26</span>
+        </div>
+        <div id="commFeedList"></div>
+      </div>
+    </div>
+
+    <!-- 3. LIVE CASINO -->
+    <div id="sec-casino" class="tab-section">
+      <div class="card">
+        <div class="card-head">
+          <span id="casinoTitle">Dragon / Tiger Live Table (Demo)</span>
+          <span class="live-badge">LIVE TABLE</span>
+        </div>
+        <div class="score-banner" style="justify-content:center;text-align:center;" id="casinoBanner">
+          Select Dragon, Tiger, or Tie and play a round
+        </div>
+        <div class="quick-row" style="grid-template-columns:repeat(3,1fr);">
+          <button id="pickDragon" class="gold" onclick="setCasinoPick('DRAGON')">Dragon (1.95x)</button>
+          <button id="pickTiger" onclick="setCasinoPick('TIGER')">Tiger (1.95x)</button>
+          <button id="pickTie" onclick="setCasinoPick('TIE')">Tie (8.00x)</button>
+        </div>
+        <div class="slip-grid">
+          <input type="number" id="casinoStake" value="100" />
+          <button class="gold" id="playCasinoBtn" onclick="playCasinoRound()">Play Round</button>
+        </div>
+        <div id="casinoHistory" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- 4. SUPER / MASTER IDs + SUPABASE BRIDGE -->
+    <div id="sec-admin" class="tab-section">
+      <div class="card">
+        <div class="card-head">
+          <span id="sbTitle">Supabase Cloud Connection</span>
+          <button onclick="saveSupabaseConfig()" id="btnSaveSb">Save & Sync</button>
+        </div>
+        <div class="slip-grid">
+          <div>
+            <div class="note">Supabase Project URL</div>
+            <input type="text" id="sbUrlInput" placeholder="https://xxxx.supabase.co" />
           </div>
-          <button type="submit" class="btn-gold" style="padding: 10px 18px;" data-i18n="createBtn">Create Account</button>
-        </form>
+          <div>
+            <div class="note">Supabase Anon Key</div>
+            <input type="password" id="sbKeyInput" placeholder="eyJ..." />
+          </div>
+        </div>
+        <div class="slip-grid">
+          <div>
+            <div class="note">Accounts Table Name</div>
+            <input type="text" id="sbTableInput" value="Users" />
+          </div>
+          <div>
+            <div class="note">Transactions Table Name</div>
+            <input type="text" id="sbTxTableInput" value="Transactions" />
+          </div>
+        </div>
+        <div class="note" id="sbStatus">Local browser mode active. Enter Supabase URL & Key to sync IDs and point transfers.</div>
       </div>
 
-      <!-- TAB 3: TRANSACTIONS -->
-      <div id="txTab" class="card">
-        <h3 style="font-size: 16px; margin-bottom: 12px;" data-i18n="txHistoryTitle">Transaction History</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th data-i18n="from">From</th>
-                <th data-i18n="to">To</th>
-                <th data-i18n="points">Points</th>
-                <th data-i18n="type">Type</th>
-                <th data-i18n="date">Date</th>
-              </tr>
-            </thead>
-            <tbody id="txTableBody"></tbody>
-          </table>
+      <div class="card">
+        <div class="card-head">
+          <span id="adminTitle">Create Super ID / Master ID / User ID</span>
+        </div>
+        <div class="slip-grid">
+          <div>
+            <div class="note" id="lblNewUser">Username / ID</div>
+            <input type="text" id="newIdName" placeholder="e.g. master_king_01" />
+          </div>
+          <div>
+            <div class="note" id="lblNewRole">Account Role</div>
+            <select id="newIdRole">
+              <option value="SUPER">SUPER ID</option>
+              <option value="MASTER" selected>MASTER ID</option>
+              <option value="USER">USER ID</option>
+            </select>
+          </div>
+        </div>
+        <div class="slip-grid">
+          <div>
+            <div class="note" id="lblInitPts">Opening Points</div>
+            <input type="number" id="newIdPoints" value="5000" />
+          </div>
+          <div style="display:flex;align-items:flex-end;">
+            <button class="gold" style="width:100%;" id="btnCreateId" onclick="createAccount()">Create ID</button>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
 
-  <!-- ACTION MODAL (DEPOSIT / WITHDRAW / RESET PASSWORD) -->
-  <div id="actionModal" class="modal-backdrop">
-    <div class="modal-card">
-      <h3 id="modalTitle" style="font-size: 17px; margin-bottom: 6px;"></h3>
-      <p id="modalTargetLabel" style="font-size: 13px; color: var(--muted); margin-bottom: 14px;"></p>
-      <form id="modalForm">
-        <div class="field" id="amountField">
-          <label for="modalAmount" data-i18n="points">Points</label>
-          <input type="number" id="modalAmount" min="0.01" step="any" />
+      <div class="card">
+        <div class="card-head"><span id="accountsHead">IDs Hierarchy, Switch & Point Transfers</span></div>
+        <div id="accountsList"></div>
+      </div>
+    </div>
+
+    <!-- 5. STATEMENT & RULES -->
+    <div id="sec-statement" class="tab-section">
+      <div class="card">
+        <div class="card-head"><span id="stmtHead">Account Statement & Activity Log</span></div>
+        <div id="txList"></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><span id="rulesHead">Exchange & Platform Notes</span></div>
+        <div class="note" id="rulesBody">
+          This package provides an exchange UI prototype (Back/Lay markets, bet slip, exposure counter, ball-by-ball and casino simulation, and Super/Master ID management). For real-money or production exchange operations, connect verified sports/exchange feeds, secure server-side settlement logic, and follow applicable laws and licensing rules.
         </div>
-        <div class="field hidden" id="passField">
-          <label for="modalNewPassword" data-i18n="newPassword">New Password</label>
-          <input type="text" id="modalNewPassword" />
-        </div>
-        <div class="actions-row" style="justify-content: flex-end; margin-top: 14px;">
-          <button type="button" class="btn-outline" onclick="closeModal()" data-i18n="cancel">Cancel</button>
-          <button type="submit" class="btn-gold" id="modalSaveBtn" data-i18n="save">Save</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
 
-  <div id="toast" class="toast"></div>
-
   <script>
-    const SUPABASE_URL = "https://lzkjfpjjaurdmlgicaqa.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx6a2pmcGpqYXVyZG1sZ2ljYXFhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUxNDkyNTEsImV4cCI6MjExMDcyNTI1MX0.bXUSL--F_ZdyTmk1TJKuOQTp4o7OFqTaNjAxfnQ3i3E";
+    let isUrdu = false;
+    let activeAccount = "super_kehar";
+    let balance = 1500;
+    let exposure = 0;
+    let bmSuspended = false;
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    let runs = 195, wickets = 5, balls = 515;
+    let recentBalls = ["1", "0", "4", "1", "2", "1"];
+    let selectedSlip = { market: "MATCH_ODDS", runner: "New Zealand", side: "BACK", odds: 1.85 };
+    let matchedBets = [];
 
-    const I18N = {
-      en: {
-        appTitle: "KING SUPER MASTER PANEL",
-        logout: "Logout",
-        username: "Username",
-        password: "Password",
-        newPassword: "New Password",
-        signIn: "Sign In",
-        loggedUser: "Logged In Account",
-        roleLabel: "Role",
-        myPoints: "Available Points",
-        managedAccounts: "Managed Accounts",
-        separateLinksTitle: "Separate Panel Links",
-        adminLinkLabel: "Admin / Master / Agent Link",
-        userLinkLabel: "Users Only Link",
-        copy: "Copy",
-        copied: "Link copied",
-        accountsTab: "Accounts",
-        createTab: "Create Account",
-        txTab: "Transactions",
-        accountsListTitle: "Accounts List",
-        refresh: "Refresh",
-        parent: "Parent",
-        points: "Points",
-        status: "Status",
-        actions: "Actions",
-        createAccountTitle: "Create Sub-Account",
-        initialPoints: "Initial Points",
-        createBtn: "Create Account",
-        txHistoryTitle: "Transaction History",
-        from: "From",
-        to: "To",
-        type: "Type",
-        date: "Date",
-        cancel: "Cancel",
-        save: "Save",
-        deposit: "+ Deposit",
-        withdraw: "- Withdraw",
-        resetPass: "Reset Pass",
-        block: "Block",
-        unblock: "Unblock",
-        active: "active",
-        blocked: "blocked",
-        adminModeSub: "Admin / Super Master / Master / Agent Portal",
-        userModeSub: "User Portal",
-        adminLoginHeading: "Admin & Staff Login",
-        userLoginHeading: "User Login",
-        adminLoginDesc: "Sign in with your Super Master, Master, or Agent credentials.",
-        userLoginDesc: "Sign in with your User account credentials.",
-        wrongPanelRole: "Please use the matching panel link for your account role.",
-        invalidCreds: "Invalid username or password.",
-        accountBlocked: "This account is blocked.",
-        dbConnected: "Online Database Connected",
-        dbError: "Database Connection Issue",
-        createdSuccess: "Account created successfully",
-        updatedSuccess: "Updated successfully",
-        insufficientPoints: "Insufficient points balance",
-        enterValidAmount: "Enter a valid positive amount",
-        enterPassword: "Enter a new password"
-      },
-      ur: {
-        appTitle: "کنگ سپر ماسٹر پینل",
-        logout: "لاگ آؤٹ",
-        username: "یوزر نیم",
-        password: "پاس ورڈ",
-        newPassword: "نیا پاس ورڈ",
-        signIn: "لاگ ان کریں",
-        loggedUser: "موجودہ اکاؤنٹ",
-        roleLabel: "رول",
-        myPoints: "موجودہ پوائنٹس",
-        managedAccounts: "زیرِ نگرانی اکاؤنٹس",
-        separateLinksTitle: "الگ الگ پینل لنکس",
-        adminLinkLabel: "ایڈمن / ماسٹر / ایجنٹ لنک",
-        userLinkLabel: "صرف یوزرز کا لنک",
-        copy: "کاپی کریں",
-        copied: "لنک کاپی ہو گیا",
-        accountsTab: "اکاؤنٹس",
-        createTab: "نیا اکاؤنٹ بنائیں",
-        txTab: "ٹرانزیکشنز",
-        accountsListTitle: "اکاؤنٹس کی فہرست",
-        refresh: "تازہ کریں",
-        parent: "پیرنٹ",
-        points: "پوائنٹس",
-        status: "اسٹیٹس",
-        actions: "کارروائی",
-        createAccountTitle: "نیا ماتحت اکاؤنٹ بنائیں",
-        initialPoints: "ابتدائی پوائنٹس",
-        createBtn: "اکاؤنٹ بنائیں",
-        txHistoryTitle: "لین دین کی تاریخ",
-        from: "منجانب",
-        to: "بنام",
-        type: "قسم",
-        date: "تاریخ",
-        cancel: "منسوخ",
-        save: "محفوظ کریں",
-        deposit: "+ ڈپازٹ",
-        withdraw: "- ودڈرا",
-        resetPass: "پاس ورڈ ری سیٹ",
-        block: "بلاک",
-        unblock: "ان بلاک",
-        active: "فعال",
-        blocked: "بلاک",
-        adminModeSub: "ایڈمن / سپر ماسٹر / ماسٹر / ایجنٹ پورٹل",
-        userModeSub: "یوزر پورٹل",
-        adminLoginHeading: "ایڈمن و اسٹاف لاگ ان",
-        userLoginHeading: "یوزر لاگ ان",
-        adminLoginDesc: "اپنے سپر ماسٹر، ماسٹر یا ایجنٹ اکاؤنٹ سے لاگ ان کریں۔",
-        userLoginDesc: "اپنے یوزر اکاؤنٹ کا یوزر نیم اور پاس ورڈ درج کریں۔",
-        wrongPanelRole: "براہ کرم اپنے اکاؤنٹ کے مطابق صحیح لنک استعمال کریں۔",
-        invalidCreds: "غلط یوزر نیم یا پاس ورڈ۔",
-        accountBlocked: "یہ اکاؤنٹ بلاک ہے۔",
-        dbConnected: "آن لائن ڈیٹا بیس منسلک ہے",
-        dbError: "ڈیٹا بیس کنکشن میں مسئلہ",
-        createdSuccess: "اکاؤنٹ کامیابی سے بن گیا",
-        updatedSuccess: "کامیابی سے اپڈیٹ ہو گیا",
-        insufficientPoints: "آپ کے پاس کافی پوائنٹس موجود نہیں ہیں",
-        enterValidAmount: "درست رقم درج کریں",
-        enterPassword: "نیا پاس ورڈ درج کریں"
-      }
+    let t20Runs = 142, t20Wkts = 3, t20Balls = 92;
+    let comms = [
+      { ov: "15.2", badge: "4", en: "FOUR! Cracked through point!", ur: "چوکا! پوائنٹ کے علاقے سے باؤنڈری!" },
+      { ov: "15.1", badge: "0", en: "Dot ball on off stump.", ur: "آف اسٹمپ پر ڈاٹ بال۔" }
+    ];
+
+    let casinoPick = "DRAGON";
+    let casinoLogs = [];
+
+    let accounts = [
+      { id: "acc_1", username: "super_kehar", role: "SUPER", points: 50000 },
+      { id: "acc_2", username: "master_01", role: "MASTER", points: 10000 },
+      { id: "acc_3", username: "user_demo", role: "USER", points: 1500 }
+    ];
+
+    let txLogs = [
+      { summary: "Opening allocation • super_kehar (SUPER) • 50000 pts" },
+      { summary: "Opening allocation • master_01 (MASTER) • 10000 pts" }
+    ];
+
+    let sbClient = null;
+    let sbConfig = {
+      url: localStorage.getItem("ksm_sb_url") || "",
+      key: localStorage.getItem("ksm_sb_key") || "",
+      usersTable: localStorage.getItem("ksm_sb_users_tbl") || "Users",
+      txTable: localStorage.getItem("ksm_sb_tx_tbl") || "Transactions"
     };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const panelMode = urlParams.get("panel") === "user" ? "user" : "admin";
-
-    let lang = localStorage.getItem("ksm_lang") || "en";
-    let theme = localStorage.getItem("ksm_theme") || "dark";
-    let currentUser = null;
-    let allAccounts = [];
-    let allTransactions = [];
-    let modalContext = null;
-
-    function t(key) {
-      return (I18N[lang] && I18N[lang][key]) || I18N.en[key] || key;
-    }
-
-    function showToast(msg) {
-      const el = document.getElementById("toast");
-      el.textContent = msg;
-      el.classList.add("show");
-      clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
-    }
-
-    function applyLanguage() {
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
-      document.getElementById("langToggle").textContent = lang === "ur" ? "EN" : "اردو";
-
-      document.querySelectorAll("[data-i18n]").forEach((el) => {
-        const key = el.getAttribute("data-i18n");
-        el.textContent = t(key);
-      });
-
-      document.getElementById("modeSubtitle").textContent =
-        panelMode === "user" ? t("userModeSub") : t("adminModeSub");
-      document.getElementById("loginHeading").textContent =
-        panelMode === "user" ? t("userLoginHeading") : t("adminLoginHeading");
-      document.getElementById("loginDesc").textContent =
-        panelMode === "user" ? t("userLoginDesc") : t("adminLoginDesc");
-
-      updateLinkBoxes();
-      if (currentUser) {
-        renderRoleOptions();
-        renderDashboard();
-      }
-    }
-
-    function applyTheme() {
-      if (theme === "light") {
-        document.body.classList.add("light");
-        document.getElementById("themeToggle").textContent = "Dark";
-      } else {
-        document.body.classList.remove("light");
-        document.getElementById("themeToggle").textContent = "Light";
-      }
-    }
-
-    function updateLinkBoxes() {
-      const base = window.location.origin + window.location.pathname;
-      document.getElementById("adminLinkText").textContent = base + "?panel=admin";
-      document.getElementById("userLinkText").textContent = base + "?panel=user";
-    }
-
-    function copyLink(type) {
-      const text = type === "user"
-        ? document.getElementById("userLinkText").textContent
-        : document.getElementById("adminLinkText").textContent;
-      navigator.clipboard.writeText(text).then(() => showToast(t("copied")));
-    }
-
-    async function ensureSeedSuperUser() {
-      try {
-        const { data, error } = await sb
-          .from("panel_accounts")
-          .select("id")
-          .eq("username", "Kehar")
-          .maybeSingle();
-
-        if (error) throw error;
-
-        if (!data) {
-          await sb.from("panel_accounts").insert([{
-            username: "Kehar",
-            password: "Khan@5244",
-            role: "super",
-            parent_username: "SYSTEM",
-            balance: 1000000,
-            status: "active"
-          }]);
-        }
-
-        document.getElementById("dbDot").className = "dot ok";
-        document.getElementById("dbStatusText").textContent = t("dbConnected");
-      } catch (err) {
-        document.getElementById("dbDot").className = "dot err";
-        document.getElementById("dbStatusText").textContent = t("dbError");
-      }
-    }
-
-    document.getElementById("langToggle").addEventListener("click", () => {
-      lang = lang === "en" ? "ur" : "en";
-      localStorage.setItem("ksm_lang", lang);
-      applyLanguage();
-    });
-
-    document.getElementById("themeToggle").addEventListener("click", () => {
-      theme = theme === "dark" ? "light" : "dark";
-      localStorage.setItem("ksm_theme", theme);
-      applyTheme();
-    });
-
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      currentUser = null;
-      sessionStorage.removeItem("ksm_session_user");
-      document.getElementById("dashboardSection").classList.add("hidden");
-      document.getElementById("logoutBtn").classList.add("hidden");
-      document.getElementById("loginSection").classList.remove("hidden");
-      document.getElementById("loginForm").reset();
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("loginUsername").value.trim();
-      const password = document.getElementById("loginPassword").value;
-
-      const { data, error } = await sb
-        .from("panel_accounts")
-        .select("*")
-        .ilike("username", username)
-        .maybeSingle();
-
-      if (error || !data || data.password !== password) {
-        showToast(t("invalidCreds"));
-        return;
-      }
-
-      if (data.status !== "active") {
-        showToast(t("accountBlocked"));
-        return;
-      }
-
-      if (panelMode === "user" && data.role !== "user") {
-        showToast(t("wrongPanelRole"));
-        return;
-      }
-
-      if (panelMode === "admin" && data.role === "user") {
-        showToast(t("wrongPanelRole"));
-        return;
-      }
-
-      currentUser = data;
-      sessionStorage.setItem("ksm_session_user", JSON.stringify({ id: data.id, panelMode }));
-      await enterDashboard();
-    });
-
-    async function enterDashboard() {
-      document.getElementById("loginSection").classList.add("hidden");
-      document.getElementById("dashboardSection").classList.remove("hidden");
-      document.getElementById("logoutBtn").classList.remove("hidden");
-
-      const isUserOnly = currentUser.role === "user";
-      document.getElementById("linksCard").classList.toggle("hidden", isUserOnly);
-      document.getElementById("staffTabs").classList.toggle("hidden", isUserOnly);
-      document.getElementById("accountsTab").classList.toggle("hidden", isUserOnly);
-      document.getElementById("createTab").classList.add("hidden");
-      document.getElementById("subCountCard").classList.toggle("hidden", isUserOnly);
-      document.getElementById("txTab").classList.remove("hidden");
-
-      renderRoleOptions();
-      await refreshAll();
-    }
-
-    function renderRoleOptions() {
-      if (!currentUser) return;
-      const sel = document.getElementById("newRole");
-      sel.innerHTML = "";
-      let roles = [];
-      if (currentUser.role === "super") roles = ["master", "agent", "user"];
-      else if (currentUser.role === "master") roles = ["agent", "user"];
-      else if (currentUser.role === "agent") roles = ["user"];
-
-      roles.forEach((r) => {
-        const opt = document.createElement("option");
-        opt.value = r;
-        opt.textContent = r.toUpperCase();
-        sel.appendChild(opt);
-      });
-    }
-
-    function switchTab(tabId) {
-      document.querySelectorAll(".tab-btn").forEach((b) => {
-        b.classList.toggle("active", b.getAttribute("data-tab") === tabId);
-      });
-      ["accountsTab", "createTab", "txTab"].forEach((id) => {
-        document.getElementById(id).classList.toggle("hidden", id !== tabId);
-      });
-    }
-
-    async function refreshAll() {
-      if (!currentUser) return;
-
-      const { data: freshMe } = await sb
-        .from("panel_accounts")
-        .select("*")
-        .eq("id", currentUser.id)
-        .single();
-
-      if (freshMe) currentUser = freshMe;
-
-      const { data: accs } = await sb
-        .from("panel_accounts")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      const { data: txs } = await sb
-        .from("panel_transactions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(100);
-
-      allAccounts = accs || [];
-      allTransactions = txs || [];
-      renderDashboard();
-    }
-
-    function getVisibleSubAccounts() {
-      if (currentUser.role === "super") {
-        return allAccounts.filter((a) => a.id !== currentUser.id);
-      }
-      if (currentUser.role === "master") {
-        const myAgents = allAccounts
-          .filter((a) => a.role === "agent" && a.parent_username === currentUser.username)
-          .map((a) => a.username);
-        return allAccounts.filter(
-          (a) =>
-            a.parent_username === currentUser.username ||
-            (a.role === "user" && myAgents.includes(a.parent_username))
-        );
-      }
-      if (currentUser.role === "agent") {
-        return allAccounts.filter((a) => a.parent_username === currentUser.username);
-      }
-      return [];
-    }
-
-    function renderDashboard() {
-      document.getElementById("currentUserLabel").textContent = currentUser.username;
-      document.getElementById("currentRoleLabel").textContent = currentUser.role.toUpperCase();
-      document.getElementById("currentBalanceLabel").textContent = Number(currentUser.balance || 0).toLocaleString();
-
-      const subs = getVisibleSubAccounts();
-      document.getElementById("managedCountLabel").textContent = subs.length;
-
-      const tbody = document.getElementById("accountsTableBody");
-      tbody.innerHTML = "";
-
-      subs.forEach((acc) => {
-        const tr = document.createElement("tr");
-        const statusText = acc.status === "active" ? t("active") : t("blocked");
-        const statusClass = acc.status === "active" ? "badge-active" : "badge-blocked";
-        const toggleBtnLabel = acc.status === "active" ? t("block") : t("unblock");
-
-        tr.innerHTML = `
-          <td><strong>${escapeHtml(acc.username)}</strong></td>
-          <td><span class="badge badge-role">${escapeHtml(acc.role.toUpperCase())}</span></td>
-          <td>${escapeHtml(acc.parent_username || "-")}</td>
-          <td><strong>${Number(acc.balance || 0).toLocaleString()}</strong></td>
-          <td><span class="badge ${statusClass}">${statusText}</span></td>
-          <td>
-            <div class="actions-row">
-              <button type="button" class="btn-success" onclick="openModal('deposit', '${acc.id}')">${t("deposit")}</button>
-              <button type="button" class="btn-outline" onclick="openModal('withdraw', '${acc.id}')">${t("withdraw")}</button>
-              <button type="button" class="btn-outline" onclick="openModal('resetPass', '${acc.id}')">${t("resetPass")}</button>
-              <button type="button" class="btn-danger" onclick="toggleBlock('${acc.id}')">${toggleBtnLabel}</button>
-            </div>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const txBody = document.getElementById("txTableBody");
-      txBody.innerHTML = "";
-
-      const visibleTxs = currentUser.role === "super"
-        ? allTransactions
-        : allTransactions.filter(
-            (tx) => tx.from_user === currentUser.username || tx.to_user === currentUser.username
-          );
-
-      visibleTxs.forEach((tx) => {
-        const tr = document.createElement("tr");
-        const d = tx.created_at ? new Date(tx.created_at).toLocaleString() : "-";
-        tr.innerHTML = `
-          <td>${escapeHtml(tx.from_user)}</td>
-          <td>${escapeHtml(tx.to_user)}</td>
-          <td><strong>${Number(tx.amount || 0).toLocaleString()}</strong></td>
-          <td>${escapeHtml(tx.tx_type)}</td>
-          <td>${escapeHtml(d)}</td>
-        `;
-        txBody.appendChild(tr);
-      });
-    }
-
-    document.getElementById("createAccountForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("newUsername").value.trim();
-      const password = document.getElementById("newPassword").value;
-      const role = document.getElementById("newRole").value;
-      const initPts = Number(document.getElementById("initialPoints").value || 0);
-
-      if (!username || !password || initPts < 0) return;
-
-      const exists = allAccounts.some((a) => a.username.toLowerCase() === username.toLowerCase());
-      if (exists) {
-        showToast("Username already exists");
-        return;
-      }
-
-      if (Number(currentUser.balance || 0) < initPts) {
-        showToast(t("insufficientPoints"));
-        return;
-      }
-
-      const { error: insertErr } = await sb.from("panel_accounts").insert([{
-        username,
-        password,
-        role,
-        parent_username: currentUser.username,
-        balance: initPts,
-        status: "active"
-      }]);
-
-      if (insertErr) {
-        showToast(insertErr.message);
-        return;
-      }
-
-      if (initPts > 0) {
-        const nextBal = Number(currentUser.balance || 0) - initPts;
-        await sb.from("panel_accounts").update({ balance: nextBal }).eq("id", currentUser.id);
-        await sb.from("panel_transactions").insert([{
-          from_user: currentUser.username,
-          to_user: username,
-          amount: initPts,
-          tx_type: "INITIAL_TRANSFER",
-          note: `Created ${role}`
-        }]);
-      }
-
-      document.getElementById("createAccountForm").reset();
-      document.getElementById("initialPoints").value = "0";
-      showToast(t("createdSuccess"));
-      switchTab("accountsTab");
-      await refreshAll();
-    });
-
-    function openModal(type, targetId) {
-      const target = allAccounts.find((a) => a.id === targetId);
-      if (!target) return;
-      modalContext = { type, target };
-
-      document.getElementById("modalTargetLabel").textContent =
-        `${target.username} (${target.role.toUpperCase()}) — ${Number(target.balance || 0).toLocaleString()}`;
-
-      const amtField = document.getElementById("amountField");
-      const passField = document.getElementById("passField");
-      document.getElementById("modalAmount").value = "";
-      document.getElementById("modalNewPassword").value = "";
-
-      if (type === "deposit") {
-        document.getElementById("modalTitle").textContent = t("deposit");
-        amtField.classList.remove("hidden");
-        passField.classList.add("hidden");
-      } else if (type === "withdraw") {
-        document.getElementById("modalTitle").textContent = t("withdraw");
-        amtField.classList.remove("hidden");
-        passField.classList.add("hidden");
-      } else if (type === "resetPass") {
-        document.getElementById("modalTitle").textContent = t("resetPass");
-        amtField.classList.add("hidden");
-        passField.classList.remove("hidden");
-      }
-
-      document.getElementById("actionModal").classList.add("open");
-    }
-
-    function closeModal() {
-      modalContext = null;
-      document.getElementById("actionModal").classList.remove("open");
-    }
-
-    document.getElementById("modalForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      if (!modalContext) return;
-      const { type, target } = modalContext;
-
-      if (type === "resetPass") {
-        const newPass = document.getElementById("modalNewPassword").value;
-        if (!newPass) {
-          showToast(t("enterPassword"));
-          return;
-        }
-        await sb.from("panel_accounts").update({ password: newPass }).eq("id", target.id);
-        closeModal();
-        showToast(t("updatedSuccess"));
-        await refreshAll();
-        return;
-      }
-
-      const amount = Number(document.getElementById("modalAmount").value);
-      if (!amount || amount <= 0) {
-        showToast(t("enterValidAmount"));
-        return;
-      }
-
-      if (type === "deposit") {
-        if (Number(currentUser.balance || 0) < amount) {
-          showToast(t("insufficientPoints"));
-          return;
-        }
-        await sb.from("panel_accounts")
-          .update({ balance: Number(currentUser.balance || 0) - amount })
-          .eq("id", currentUser.id);
-
-        await sb.from("panel_accounts")
-          .update({ balance: Number(target.balance || 0) + amount })
-          .eq("id", target.id);
-
-        await sb.from("panel_transactions").insert([{
-          from_user: currentUser.username,
-          to_user: target.username,
-          amount,
-          tx_type: "DEPOSIT",
-          note: "Deposit"
-        }]);
-      } else if (type === "withdraw") {
-        if (Number(target.balance || 0) < amount) {
-          showToast(t("insufficientPoints"));
-          return;
-        }
-        await sb.from("panel_accounts")
-          .update({ balance: Number(target.balance || 0) - amount })
-          .eq("id", target.id);
-
-        await sb.from("panel_accounts")
-          .update({ balance: Number(currentUser.balance || 0) + amount })
-          .eq("id", currentUser.id);
-
-        await sb.from("panel_transactions").insert([{
-          from_user: target.username,
-          to_user: currentUser.username,
-          amount,
-          tx_type: "WITHDRAW",
-          note: "Withdraw"
-        }]);
-      }
-
-      closeModal();
-      showToast(t("updatedSuccess"));
-      await refreshAll();
-    });
-
-    async function toggleBlock(targetId) {
-      const target = allAccounts.find((a) => a.id === targetId);
-      if (!target) return;
-      const nextStatus = target.status === "active" ? "blocked" : "active";
-      await sb.from("panel_accounts").update({ status: nextStatus }).eq("id", target.id);
-      showToast(t("updatedSuccess"));
-      await refreshAll();
-    }
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    (async function init() {
-      applyTheme();
-      applyLanguage();
-      await ensureSeedSuperUser();
-
-      const saved = sessionStorage.getItem("ksm_session_user");
-      if (saved) {
+    function initSupabase() {
+      document.getElementById("sbUrlInput").value = sbConfig.url;
+      document.getElementById("sbKeyInput").value = sbConfig.key;
+      document.getElementById("sbTableInput").value = sbConfig.usersTable;
+      document.getElementById("sbTxTableInput").value = sbConfig.txTable;
+
+      if (sbConfig.url && sbConfig.key && window.supabase) {
         try {
-          const parsed = JSON.parse(saved);
-          if (parsed && parsed.id && parsed.panelMode === panelMode) {
-            const { data } = await sb
-              .from("panel_accounts")
-              .select("*")
-              .eq("id", parsed.id)
-              .maybeSingle();
-            if (data && data.status === "active") {
-              currentUser = data;
-              await enterDashboard();
-            }
-          }
-        } catch (_) {}
+          sbClient = window.supabase.createClient(sbConfig.url, sbConfig.key);
+          document.getElementById("sbStatus").textContent = "Supabase client initialized (" + sbConfig.usersTable + ").";
+          loadAccountsFromSupabase();
+        } catch (err) {
+          sbClient = null;
+          document.getElementById("sbStatus").textContent = "Invalid Supabase URL/Key; running in local mode.";
+        }
       }
-    })();
+    }
+
+    async function saveSupabaseConfig() {
+      sbConfig.url = document.getElementById("sbUrlInput").value.trim();
+      sbConfig.key = document.getElementById("sbKeyInput").value.trim();
+      sbConfig.usersTable = document.getElementById("sbTableInput").value.trim() || "Users";
+      sbConfig.txTable = document.getElementById("sbTxTableInput").value.trim() || "Transactions";
+
+      localStorage.setItem("ksm_sb_url", sbConfig.url);
+      localStorage.setItem("ksm_sb_key", sbConfig.key);
+      localStorage.setItem("ksm_sb_users_tbl", sbConfig.usersTable);
+      localStorage.setItem("ksm_sb_tx_tbl", sbConfig.txTable);
+
+      initSupabase();
+    }
+
+    async function loadAccountsFromSupabase() {
+      if (!sbClient) return;
+      const { data, error } = await sbClient.from(sbConfig.usersTable).select("*").limit(50);
+      if (!error && Array.isArray(data) && data.length) {
+        accounts = data.map((row, idx) => ({
+          id: row.id || ("sb_" + idx),
+          username: row.username || row.name || ("user_" + idx),
+          role: (row.role || "USER").toUpperCase(),
+          points: Number(row.points ?? row.balance ?? 0)
+        }));
+        renderAll();
+      }
+    }
+
+    async function createAccount() {
+      const u = document.getElementById("newIdName").value.trim();
+      const role = document.getElementById("newIdRole").value;
+      const pts = Number(document.getElementById("newIdPoints").value || 0);
+      if (!u) return;
+
+      accounts.unshift({ id: "id_" + Date.now(), username: u, role, points: pts });
+      txLogs.unshift({ summary: `Created ${role} ID: ${u} (${pts} pts)` });
+      document.getElementById("newIdName").value = "";
+
+      if (sbClient) {
+        await sbClient.from(sbConfig.usersTable).insert([{ username: u, role, points: pts }]);
+        await sbClient.from(sbConfig.txTable).insert([{ note: `Created ${role} ${u}`, amount: pts }]);
+      }
+      renderAll();
+    }
+
+    async function adjustAccountPoints(idx, delta) {
+      const acc = accounts[idx];
+      if (!acc) return;
+      acc.points = Math.max(0, Number(acc.points || 0) + delta);
+      const sign = delta >= 0 ? `+${delta}` : `${delta}`;
+      txLogs.unshift({ summary: `${acc.username} (${acc.role}): ${sign} pts -> Balance ${acc.points}` });
+
+      if (sbClient) {
+        await sbClient.from(sbConfig.txTable).insert([{ note: `${acc.username} ${sign} pts`, amount: delta }]);
+      }
+      renderAll();
+    }
+
+    function useAccountForWallet(username, pts) {
+      activeAccount = username;
+      balance = Number(pts || 1500);
+      exposure = 0;
+      matchedBets = [];
+      txLogs.unshift({ summary: `Switched active wallet to ${username} (${balance} pts)` });
+      renderAll();
+    }
+
+    function toggleSuspendBookmaker() {
+      bmSuspended = !bmSuspended;
+      renderAll();
+    }
+
+    function switchTab(name) {
+      ["exch", "ball", "casino", "admin", "statement"].forEach(t => {
+        document.getElementById("sec-" + t).className = (t === name) ? "tab-section active" : "tab-section";
+      });
+      document.getElementById("tabBtnExch").className = name === "exch" ? "active" : "";
+      document.getElementById("tabBtnBall").className = name === "ball" ? "active" : "";
+      document.getElementById("tabBtnCasino").className = name === "casino" ? "active" : "";
+      document.getElementById("tabBtnAdmin").className = name === "admin" ? "active" : "";
+      document.getElementById("tabBtnStatement").className = name === "statement" ? "active" : "";
+    }
+
+    function selectRate(market, runner, side, odds) {
+      selectedSlip = { market, runner, side, odds: Number(odds) };
+      document.getElementById("slipOdds").value = odds;
+      document.getElementById("slipHead").textContent = `${market} • ${runner} (${side})`;
+      updateSlipProfit();
+    }
+
+    function addStake(val) {
+      const el = document.getElementById("slipStake");
+      el.value = Number(el.value || 0) + val;
+      updateSlipProfit();
+    }
+
+    function updateSlipProfit() {
+      const odds = Number(document.getElementById("slipOdds").value || 0);
+      const stake = Number(document.getElementById("slipStake").value || 0);
+      const profit = selectedSlip.market === "MATCH_ODDS" ? Math.round(stake * Math.max(0, odds - 1)) : stake;
+      document.getElementById("estProfitTxt").textContent = isUrdu ? `متوقع منافع: ${profit}` : `Est. Profit: ${profit}`;
+    }
+
+    function placeExchBet() {
+      const odds = Number(document.getElementById("slipOdds").value);
+      const stake = Number(document.getElementById("slipStake").value);
+      if (!stake || stake <= 0 || stake > (balance - exposure)) {
+        document.getElementById("exchStatus").textContent = isUrdu ? "درست رقم درج کریں یا بیلنس چیک کریں۔" : "Enter valid amount within balance.";
+        return;
+      }
+      exposure += stake;
+      matchedBets.unshift({ ...selectedSlip, odds, stake });
+      txLogs.unshift({ summary: `Bet (${activeAccount}): ${selectedSlip.runner} ${selectedSlip.side} @ ${odds} (${stake} pts)` });
+      document.getElementById("exchStatus").textContent = isUrdu ? "ڈیمو بیٹ لگ گئی!" : "Matched in demo!";
+      renderAll();
+    }
+
+    function settleMatchedBets(outcome) {
+      if (!matchedBets.length) return;
+      let net = 0;
+      matchedBets.forEach(b => {
+        if (outcome === "WIN") {
+          net += b.market === "MATCH_ODDS" ? Math.round(b.stake * Math.max(0.1, b.odds - 1)) : b.stake;
+        } else {
+          net -= b.stake;
+        }
+      });
+      balance = Math.max(0, balance + net);
+      exposure = 0;
+      txLogs.unshift({ summary: `Settled ${matchedBets.length} demo bets -> Net ${net >= 0 ? "+" + net : net} pts` });
+      matchedBets = [];
+      renderAll();
+    }
+
+    function resetWallet() {
+      balance = 1500;
+      exposure = 0;
+      matchedBets = [];
+      renderAll();
+    }
+
+    function stepSingleBall() {
+      const pool = [
+        { b: "0", r: 0, w: 0, en: "Dot ball! Tight line.", ur: "ڈاٹ بال! عمدہ گیند۔" },
+        { b: "1", r: 1, w: 0, en: "Quick single taken.", ur: "تیزی سے ایک رن مکمل۔" },
+        { b: "4", r: 4, w: 0, en: "FOUR! Great boundary shot!", ur: "چوکا! شاندار باؤنڈری!" },
+        { b: "6", r: 6, w: 0, en: "SIX! Huge hit over mid-wicket!", ur: "چھکا! مڈ وکٹ کے اوپر بلند شاٹ!" },
+        { b: "W", r: 0, w: 1, en: "WICKET! Clean bowled!", ur: "وکٹ! کلین بولڈ!" }
+      ];
+      const ev = pool[Math.floor(Math.random() * pool.length)];
+      t20Runs += ev.r;
+      t20Wkts += ev.w;
+      t20Balls += 1;
+      const ov = `${Math.floor(t20Balls / 6)}.${t20Balls % 6}`;
+      comms.unshift({ ov, badge: ev.b, en: ev.en, ur: ev.ur });
+      if (comms.length > 15) comms.pop();
+      renderAll();
+    }
+
+    function setCasinoPick(p) {
+      casinoPick = p;
+      document.getElementById("pickDragon").className = p === "DRAGON" ? "gold" : "";
+      document.getElementById("pickTiger").className = p === "TIGER" ? "gold" : "";
+      document.getElementById("pickTie").className = p === "TIE" ? "gold" : "";
+    }
+
+    function playCasinoRound() {
+      const stake = Number(document.getElementById("casinoStake").value || 0);
+      if (!stake || stake <= 0 || stake > (balance - exposure)) return;
+      const d = Math.floor(Math.random() * 13) + 1;
+      const t = Math.floor(Math.random() * 13) + 1;
+      const res = d > t ? "DRAGON" : (t > d ? "TIGER" : "TIE");
+      const mult = casinoPick === "TIE" ? 8 : 1.95;
+      if (res === casinoPick) {
+        const winAmt = Math.round(stake * (mult - 1));
+        balance += winAmt;
+        document.getElementById("casinoBanner").textContent = `Dragon ${d} vs Tiger ${t} • WON +${winAmt}`;
+        casinoLogs.unshift(`Dragon ${d} vs Tiger ${t} (+${winAmt})`);
+        txLogs.unshift({ summary: `Casino Won: Dragon ${d} vs Tiger ${t} (+${winAmt} pts)` });
+      } else {
+        balance -= stake;
+        document.getElementById("casinoBanner").textContent = `Dragon ${d} vs Tiger ${t} • -${stake}`;
+        casinoLogs.unshift(`Dragon ${d} vs Tiger ${t} (-${stake})`);
+        txLogs.unshift({ summary: `Casino Settled: Dragon ${d} vs Tiger ${t} (-${stake} pts)` });
+      }
+      renderAll();
+    }
+
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+      renderAll();
+    }
+
+    function toggleLang() {
+      isUrdu = !isUrdu;
+      document.documentElement.lang = isUrdu ? "ur" : "en";
+      document.documentElement.dir = isUrdu ? "rtl" : "ltr";
+      renderAll();
+    }
+
+    function renderAll() {
+      const avail = balance - exposure;
+      document.getElementById("activeIdPill").textContent = `ID: ${activeAccount}`;
+      document.getElementById("balPill").textContent = isUrdu ? `بیلنس: ${avail}` : `Balance: ${avail}`;
+      document.getElementById("expPill").textContent = isUrdu ? `ایکسپوژر: -${exposure}` : `Exp: -${exposure}`;
+      document.getElementById("langBtn").textContent = isUrdu ? "English" : "اردو";
+      document.getElementById("themeBtn").textContent = document.body.classList.contains("light") ? "Dark" : "Light";
+
+      document.getElementById("tabBtnExch").textContent = isUrdu ? "ایکسچینج میچ" : "Exchange Match";
+      document.getElementById("tabBtnBall").textContent = isUrdu ? "بال بائی بال" : "Ball-by-Ball";
+      document.getElementById("tabBtnCasino").textContent = isUrdu ? "لائیو کیسینو" : "Live Casino";
+      document.getElementById("tabBtnAdmin").textContent = isUrdu ? "سپر / ماسٹر آئی ڈی" : "Super / Master IDs";
+      document.getElementById("tabBtnStatement").textContent = isUrdu ? "اسٹیٹمنٹ و رولز" : "Statement & Rules";
+
+      const ov = `${Math.floor(balls / 6)}.${balls % 6}`;
+      document.getElementById("liveScoreTxt").textContent = `${runs}/${wickets} (${ov} Ov)`;
+      document.getElementById("recentBallsStrip").innerHTML =
+        `<span>${isUrdu ? "گیندیں:" : "Balls:"}</span>` +
+        recentBalls.map(b => `<span class="ball-dot">${b}</span>`).join("");
+
+      const oddsList = [
+        { name: isUrdu ? "نیوزی لینڈ" : "New Zealand", raw: "New Zealand", b: 1.85, l: 1.87 },
+        { name: isUrdu ? "انڈیا" : "India", raw: "India", b: 2.18, l: 2.22 },
+        { name: isUrdu ? "ڈرا" : "The Draw", raw: "The Draw", b: 6.40, l: 6.80 }
+      ];
+      document.getElementById("oddsRows").innerHTML = oddsList.map(r => `
+        <div class="market-row">
+          <div><strong>${r.name}</strong></div>
+          <button class="rate-btn back" onclick="selectRate('MATCH_ODDS','${r.raw}','BACK',${r.b})">
+            <span class="rate-main">${r.b.toFixed(2)}</span><span class="rate-vol">12.4K</span>
+          </button>
+          <button class="rate-btn lay" onclick="selectRate('MATCH_ODDS','${r.raw}','LAY',${r.l})">
+            <span class="rate-main">${r.l.toFixed(2)}</span><span class="rate-vol">9.8K</span>
+          </button>
+        </div>
+      `).join("");
+
+      const bmList = [
+        { name: isUrdu ? "نیوزی لینڈ (بک میکر)" : "New Zealand (BM)", raw: "New Zealand BM", b: 84, l: 86 },
+        { name: isUrdu ? "انڈیا (بک میکر)" : "India (BM)", raw: "India BM", b: 114, l: 117 }
+      ];
+      document.getElementById("bmRows").innerHTML = bmList.map(r => {
+        if (bmSuspended) {
+          return `<div class="market-row"><div><strong>${r.name}</strong></div><div class="suspended-box">SUSPENDED</div></div>`;
+        }
+        return `
+          <div class="market-row">
+            <div><strong>${r.name}</strong></div>
+            <button class="rate-btn back" onclick="selectRate('Bookmaker','${r.raw}','BACK',${r.b})">
+              <span class="rate-main">${r.b}</span><span class="rate-vol">50K</span>
+            </button>
+            <button class="rate-btn lay" onclick="selectRate('Bookmaker','${r.raw}','LAY',${r.l})">
+              <span class="rate-main">${r.l}</span><span class="rate-vol">50K</span>
+            </button>
+          </div>
+        `;
+      }).join("");
+
+      const sessList = [
+        { name: isUrdu ? "90 اوور رنز" : "90 Over Runs", raw: "90 Over Runs", no: 210, yes: 212 },
+        { name: isUrdu ? "اگلا اوور رنز" : "Next Over Runs", raw: "Next Over Runs", no: 4, yes: 5 }
+      ];
+      document.getElementById("sessionRows").innerHTML = sessList.map(s => `
+        <div class="market-row">
+          <div><strong>${s.name}</strong></div>
+          <button class="rate-btn lay" onclick="selectRate('Normal','${s.raw}','NO',${s.no})">
+            <span class="rate-main">${s.no}</span><span class="rate-vol">100</span>
+          </button>
+          <button class="rate-btn back" onclick="selectRate('Normal','${s.raw}','YES',${s.yes})">
+            <span class="rate-main">${s.yes}</span><span class="rate-vol">100</span>
+          </button>
+        </div>
+      `).join("");
+
+      document.getElementById("matchedHead").textContent = `MATCHED BET (${matchedBets.length})`;
+      document.getElementById("matchedBetsList").innerHTML = matchedBets.length
+        ? matchedBets.map(m => `<div class="list-item"><span>${m.runner} (${m.side})</span><strong>${m.odds} • ${m.stake}</strong></div>`).join("")
+        : `<div class="note">${isUrdu ? "ابھی کوئی بیٹ نہیں لگی۔" : "No matched demo bets yet."}</div>`;
+
+      const t20Ov = `${Math.floor(t20Balls / 6)}.${t20Balls % 6}`;
+      const crr = ((t20Runs / t20Balls) * 6).toFixed(2);
+      document.getElementById("t20ScoreTxt").textContent = `${t20Runs}/${t20Wkts} (${t20Ov} Ov)`;
+      document.getElementById("crrTxt").textContent = `CRR: ${crr}`;
+      document.getElementById("commFeedList").innerHTML = comms.map(c =>
+        `<div class="list-item"><span><strong>Over ${c.ov}</strong> • ${isUrdu ? c.ur : c.en}</span><span class="ball-dot">${c.badge}</span></div>`
+      ).join("");
+
+      document.getElementById("casinoHistory").innerHTML = casinoLogs.map(x => `<div class="list-item"><span>${x}</span></div>`).join("");
+
+      document.getElementById("accountsList").innerHTML = accounts.map((a, idx) => `
+        <div class="list-item">
+          <div><strong>${a.username}</strong> <span style="color:var(--gold);">[${a.role}]</span> • <strong>${a.points} pts</strong></div>
+          <div class="mini-actions">
+            <button onclick="useAccountForWallet('${a.username}', ${a.points})">Use Wallet</button>
+            <button onclick="adjustAccountPoints(${idx}, 500)">+500</button>
+            <button onclick="adjustAccountPoints(${idx}, -500)">-500</button>
+          </div>
+        </div>
+      `).join("");
+
+      document.getElementById("txList").innerHTML = txLogs.map(t => `<div class="list-item"><span>${t.summary}</span></div>`).join("");
+
+      updateSlipProfit();
+    }
+
+    setInterval(() => {
+      const add = [0, 1, 2, 4, 6][Math.floor(Math.random() * 5)];
+      runs += add;
+      balls += 1;
+      recentBalls.push(String(add));
+      if (recentBalls.length > 6) recentBalls.shift();
+      stepSingleBall();
+    }, 4500);
+
+    initSupabase();
+    renderAll();
   </script>
 </body>
 </html>
