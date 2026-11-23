@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KING SUPER EXCH - Full Exchange & Admin Suite</title>
+  <title>KING SUPER EXCH - Complete Exchange & Admin Suite</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -101,12 +101,6 @@
       background: var(--gold);
       color: #11100b;
       border-color: var(--gold);
-    }
-
-    button.danger {
-      background: rgba(239, 68, 68, 0.18);
-      color: #fca5a5;
-      border-color: rgba(239, 68, 68, 0.4);
     }
 
     .main-tabs {
@@ -440,7 +434,10 @@
       <div class="card">
         <div class="card-head">
           <span id="sbTitle">Supabase Cloud Connection</span>
-          <button onclick="saveSupabaseConfig()" id="btnSaveSb">Save & Sync</button>
+          <div class="mini-actions">
+            <button onclick="saveSupabaseConfig()" id="btnSaveSb">Save & Sync</button>
+            <button onclick="refreshFromSupabase()" id="btnRefreshSb">Refresh DB</button>
+          </div>
         </div>
         <div class="slip-grid">
           <div>
@@ -449,20 +446,20 @@
           </div>
           <div>
             <div class="note">Supabase Anon Key</div>
-            <input type="password" id="sbKeyInput" placeholder="eyJ..." />
+            <input type="password" id="sbKeyInput" placeholder="sb_publishable_..." />
           </div>
         </div>
         <div class="slip-grid">
           <div>
             <div class="note">Accounts Table Name</div>
-            <input type="text" id="sbTableInput" value="Users" />
+            <input type="text" id="sbTableInput" value="accounts" />
           </div>
           <div>
             <div class="note">Transactions Table Name</div>
-            <input type="text" id="sbTxTableInput" value="Transactions" />
+            <input type="text" id="sbTxTableInput" value="transactions" />
           </div>
         </div>
-        <div class="note" id="sbStatus">Local browser mode active. Enter Supabase URL & Key to sync IDs and point transfers.</div>
+        <div class="note" id="sbStatus">Supabase configuration ready.</div>
       </div>
 
       <div class="card">
@@ -518,6 +515,7 @@
   <script>
     let isUrdu = false;
     let activeAccount = "super_kehar";
+    let activeAccountId = null;
     let balance = 1500;
     let exposure = 0;
     let bmSuspended = false;
@@ -537,9 +535,9 @@
     let casinoLogs = [];
 
     let accounts = [
-      { id: "acc_1", username: "super_kehar", role: "SUPER", points: 50000 },
-      { id: "acc_2", username: "master_01", role: "MASTER", points: 10000 },
-      { id: "acc_3", username: "user_demo", role: "USER", points: 1500 }
+      { id: null, username: "super_kehar", role: "SUPER", points: 50000 },
+      { id: null, username: "master_01", role: "MASTER", points: 10000 },
+      { id: null, username: "user_demo", role: "USER", points: 1500 }
     ];
 
     let txLogs = [
@@ -549,10 +547,10 @@
 
     let sbClient = null;
     let sbConfig = {
-      url: localStorage.getItem("ksm_sb_url") || "",
-      key: localStorage.getItem("ksm_sb_key") || "",
-      usersTable: localStorage.getItem("ksm_sb_users_tbl") || "Users",
-      txTable: localStorage.getItem("ksm_sb_tx_tbl") || "Transactions"
+      url: "https://lzkjfpjjaurdmlgicaqa.supabase.co",
+      key: "sb_publishable_nJa_i-h4bU03rFof7ajq-w_qij1RAc7",
+      usersTable: localStorage.getItem("ksm_sb_users_tbl") || "accounts",
+      txTable: localStorage.getItem("ksm_sb_tx_tbl") || "transactions"
     };
 
     function initSupabase() {
@@ -564,20 +562,20 @@
       if (sbConfig.url && sbConfig.key && window.supabase) {
         try {
           sbClient = window.supabase.createClient(sbConfig.url, sbConfig.key);
-          document.getElementById("sbStatus").textContent = "Supabase client initialized (" + sbConfig.usersTable + ").";
-          loadAccountsFromSupabase();
+          document.getElementById("sbStatus").textContent = "Supabase connected (" + sbConfig.usersTable + " & " + sbConfig.txTable + ").";
+          refreshFromSupabase();
         } catch (err) {
           sbClient = null;
-          document.getElementById("sbStatus").textContent = "Invalid Supabase URL/Key; running in local mode.";
+          document.getElementById("sbStatus").textContent = "Supabase client notice: check key/permissions or continue in local mode.";
         }
       }
     }
 
     async function saveSupabaseConfig() {
-      sbConfig.url = document.getElementById("sbUrlInput").value.trim();
-      sbConfig.key = document.getElementById("sbKeyInput").value.trim();
-      sbConfig.usersTable = document.getElementById("sbTableInput").value.trim() || "Users";
-      sbConfig.txTable = document.getElementById("sbTxTableInput").value.trim() || "Transactions";
+      sbConfig.url = document.getElementById("sbUrlInput").value.trim() || "https://lzkjfpjjaurdmlgicaqa.supabase.co";
+      sbConfig.key = document.getElementById("sbKeyInput").value.trim() || "sb_publishable_nJa_i-h4bU03rFof7ajq-w_qij1RAc7";
+      sbConfig.usersTable = document.getElementById("sbTableInput").value.trim() || "accounts";
+      sbConfig.txTable = document.getElementById("sbTxTableInput").value.trim() || "transactions";
 
       localStorage.setItem("ksm_sb_url", sbConfig.url);
       localStorage.setItem("ksm_sb_key", sbConfig.key);
@@ -587,18 +585,36 @@
       initSupabase();
     }
 
-    async function loadAccountsFromSupabase() {
+    async function refreshFromSupabase() {
       if (!sbClient) return;
-      const { data, error } = await sbClient.from(sbConfig.usersTable).select("*").limit(50);
-      if (!error && Array.isArray(data) && data.length) {
-        accounts = data.map((row, idx) => ({
-          id: row.id || ("sb_" + idx),
+      const { data: accRows, error: accErr } = await sbClient
+        .from(sbConfig.usersTable)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(50);
+
+      if (!accErr && Array.isArray(accRows) && accRows.length) {
+        accounts = accRows.map((row, idx) => ({
+          id: row.id || null,
           username: row.username || row.name || ("user_" + idx),
           role: (row.role || "USER").toUpperCase(),
           points: Number(row.points ?? row.balance ?? 0)
         }));
-        renderAll();
       }
+
+      const { data: txRows, error: txErr } = await sbClient
+        .from(sbConfig.txTable)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (!txErr && Array.isArray(txRows) && txRows.length) {
+        txLogs = txRows.map(t => ({
+          summary: `${t.tx_type || "TX"} • ${t.note || ""} (${t.amount ?? 0} pts)`
+        }));
+      }
+
+      renderAll();
     }
 
     async function createAccount() {
@@ -607,32 +623,65 @@
       const pts = Number(document.getElementById("newIdPoints").value || 0);
       if (!u) return;
 
-      accounts.unshift({ id: "id_" + Date.now(), username: u, role, points: pts });
-      txLogs.unshift({ summary: `Created ${role} ID: ${u} (${pts} pts)` });
-      document.getElementById("newIdName").value = "";
-
+      let createdId = null;
       if (sbClient) {
-        await sbClient.from(sbConfig.usersTable).insert([{ username: u, role, points: pts }]);
-        await sbClient.from(sbConfig.txTable).insert([{ note: `Created ${role} ${u}`, amount: pts }]);
+        const { data, error } = await sbClient
+          .from(sbConfig.usersTable)
+          .insert([{ username: u, role, points: pts, exposure: 0 }])
+          .select()
+          .single();
+        if (!error && data) {
+          createdId = data.id;
+          await sbClient.from(sbConfig.txTable).insert([{
+            account_id: createdId,
+            tx_type: "CREATE_ID",
+            amount: pts,
+            note: `Created ${role} ID: ${u}`
+          }]);
+        }
       }
+
+      accounts.unshift({ id: createdId, username: u, role, points: pts });
+      txLogs.unshift({ summary: `CREATE_ID • Created ${role} ID: ${u} (${pts} pts)` });
+      document.getElementById("newIdName").value = "";
       renderAll();
     }
 
     async function adjustAccountPoints(idx, delta) {
       const acc = accounts[idx];
       if (!acc) return;
-      acc.points = Math.max(0, Number(acc.points || 0) + delta);
+
+      if (sbClient && acc.id) {
+        const { data, error } = await sbClient.rpc("adjust_account_points", {
+          p_account_id: acc.id,
+          p_delta: delta,
+          p_note: `Panel adjustment for ${acc.username}`
+        });
+        if (!error && data && typeof data.new_points !== "undefined") {
+          acc.points = Number(data.new_points);
+        } else {
+          acc.points = Math.max(0, Number(acc.points || 0) + delta);
+        }
+      } else {
+        acc.points = Math.max(0, Number(acc.points || 0) + delta);
+        if (sbClient) {
+          await sbClient.from(sbConfig.txTable).insert([{
+            account_id: acc.id,
+            tx_type: delta >= 0 ? "POINT_IN" : "POINT_OUT",
+            amount: delta,
+            note: `${acc.username} (${acc.role}) adjustment`
+          }]);
+        }
+      }
+
       const sign = delta >= 0 ? `+${delta}` : `${delta}`;
       txLogs.unshift({ summary: `${acc.username} (${acc.role}): ${sign} pts -> Balance ${acc.points}` });
-
-      if (sbClient) {
-        await sbClient.from(sbConfig.txTable).insert([{ note: `${acc.username} ${sign} pts`, amount: delta }]);
-      }
       renderAll();
     }
 
-    function useAccountForWallet(username, pts) {
+    function useAccountForWallet(username, pts, accId) {
       activeAccount = username;
+      activeAccountId = accId || null;
       balance = Number(pts || 1500);
       exposure = 0;
       matchedBets = [];
@@ -676,7 +725,7 @@
       document.getElementById("estProfitTxt").textContent = isUrdu ? `متوقع منافع: ${profit}` : `Est. Profit: ${profit}`;
     }
 
-    function placeExchBet() {
+    async function placeExchBet() {
       const odds = Number(document.getElementById("slipOdds").value);
       const stake = Number(document.getElementById("slipStake").value);
       if (!stake || stake <= 0 || stake > (balance - exposure)) {
@@ -685,12 +734,32 @@
       }
       exposure += stake;
       matchedBets.unshift({ ...selectedSlip, odds, stake });
-      txLogs.unshift({ summary: `Bet (${activeAccount}): ${selectedSlip.runner} ${selectedSlip.side} @ ${odds} (${stake} pts)` });
+      txLogs.unshift({ summary: `BET_PLACE (${activeAccount}): ${selectedSlip.runner} ${selectedSlip.side} @ ${odds} (${stake} pts)` });
+
+      if (sbClient) {
+        await sbClient.from("bets").insert([{
+          account_id: activeAccountId,
+          market: selectedSlip.market,
+          runner: selectedSlip.runner,
+          side: selectedSlip.side,
+          odds,
+          stake,
+          status: "MATCHED",
+          pnl: 0
+        }]);
+        await sbClient.from(sbConfig.txTable).insert([{
+          account_id: activeAccountId,
+          tx_type: "BET_PLACE",
+          amount: -stake,
+          note: `${selectedSlip.runner} ${selectedSlip.side} @ ${odds}`
+        }]);
+      }
+
       document.getElementById("exchStatus").textContent = isUrdu ? "ڈیمو بیٹ لگ گئی!" : "Matched in demo!";
       renderAll();
     }
 
-    function settleMatchedBets(outcome) {
+    async function settleMatchedBets(outcome) {
       if (!matchedBets.length) return;
       let net = 0;
       matchedBets.forEach(b => {
@@ -702,7 +771,17 @@
       });
       balance = Math.max(0, balance + net);
       exposure = 0;
-      txLogs.unshift({ summary: `Settled ${matchedBets.length} demo bets -> Net ${net >= 0 ? "+" + net : net} pts` });
+      txLogs.unshift({ summary: `BET_SETTLE • Settled ${matchedBets.length} demo bets -> Net ${net >= 0 ? "+" + net : net} pts` });
+
+      if (sbClient) {
+        await sbClient.from(sbConfig.txTable).insert([{
+          account_id: activeAccountId,
+          tx_type: "BET_SETTLE",
+          amount: net,
+          note: `Settled ${matchedBets.length} bets (${outcome})`
+        }]);
+      }
+
       matchedBets = [];
       renderAll();
     }
@@ -866,7 +945,7 @@
         <div class="list-item">
           <div><strong>${a.username}</strong> <span style="color:var(--gold);">[${a.role}]</span> • <strong>${a.points} pts</strong></div>
           <div class="mini-actions">
-            <button onclick="useAccountForWallet('${a.username}', ${a.points})">Use Wallet</button>
+            <button onclick="useAccountForWallet('${a.username}', ${a.points}, ${a.id ? `'${a.id}'` : 'null'})">Use Wallet</button>
             <button onclick="adjustAccountPoints(${idx}, 500)">+500</button>
             <button onclick="adjustAccountPoints(${idx}, -500)">-500</button>
           </div>
@@ -892,3 +971,4 @@
   </script>
 </body>
 </html>
+
