@@ -720,3 +720,1101 @@
   </script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KEHAR EXCH — Live Sports & Points Portal</title>
+  <style>
+    :root {
+      --bg: #0c0a04;
+      --surface: #171206;
+      --surface-2: #221a08;
+      --text: #fff8e1;
+      --muted: #cbb882;
+      --gold: #f5b700;
+      --gold-bright: #ffd54f;
+      --gold-dark: #b28200;
+      --border: rgba(245, 183, 0, 0.25);
+      --ok: #2e7d32;
+      --warn: #d97706;
+      --bad: #c62828;
+      --shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+
+    body.light-mode {
+      --bg: #fffdf5;
+      --surface: #fff8db;
+      --surface-2: #ffefb0;
+      --text: #211800;
+      --muted: #6b5618;
+      --gold: #d49400;
+      --gold-bright: #f5b700;
+      --gold-dark: #8c6000;
+      --border: rgba(180, 130, 0, 0.25);
+      --shadow: 0 8px 24px rgba(140, 96, 0, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Nastaliq Urdu", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .app {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 14px;
+    }
+
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--surface), var(--surface-2));
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-badge {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      color: #1a1200;
+      font-weight: 800;
+      padding: 7px 12px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+    }
+
+    .brand h1 { font-size: 1.15rem; font-weight: 800; }
+    .brand small { display: block; color: var(--muted); font-size: 0.78rem; }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    button, input, select {
+      font-family: inherit;
+      font-size: 0.9rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 0.08s ease, opacity 0.15s ease;
+    }
+
+    button:active { transform: scale(0.98); }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--gold-bright), var(--gold));
+      color: #191100;
+      border: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--gold);
+      color: var(--gold-bright);
+    }
+
+    body.light-mode .btn-outline { color: var(--gold-dark); }
+
+    .btn-danger {
+      background: var(--bad);
+      color: #fff;
+      border: none;
+    }
+
+    .btn-ok {
+      background: var(--ok);
+      color: #fff;
+      border: none;
+    }
+
+    .portal-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    @media (max-width: 700px) {
+      .portal-bar { grid-template-columns: 1fr; }
+    }
+
+    .portal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .portal-card.active-portal {
+      border-color: var(--gold-bright);
+      box-shadow: 0 0 0 1px var(--gold);
+    }
+
+    .portal-title { font-weight: 800; color: var(--gold-bright); font-size: 0.95rem; }
+    body.light-mode .portal-title { color: var(--gold-dark); }
+
+    .link-box {
+      font-size: 0.78rem;
+      background: var(--bg);
+      padding: 7px 9px;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+      word-break: break-all;
+      color: var(--muted);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+    }
+
+    .card-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title { font-size: 1.05rem; font-weight: 800; }
+
+    .grid-2 { display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 14px; }
+    @media (max-width: 860px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label { display: block; font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    input, select { width: 100%; }
+
+    .match-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .match-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .live-pill {
+      background: var(--bad);
+      color: #fff;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .odds-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .odd-btn {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-weight: 800;
+    }
+
+    .back-btn { background: rgba(46, 125, 50, 0.22); border-color: #4caf50; }
+    .lay-btn { background: rgba(217, 119, 6, 0.22); border-color: #f59e0b; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+
+    th, td {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      text-align: start;
+    }
+
+    th { color: var(--gold-bright); font-weight: 800; }
+    body.light-mode th { color: var(--gold-dark); }
+
+    .table-wrap { overflow-x: auto; }
+
+    .status-banner {
+      padding: 10px 14px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: none;
+    }
+
+    .status-banner.show { display: block; }
+    .status-ok { background: rgba(46, 125, 50, 0.2); border: 1px solid #4caf50; color: #b9f6ca; }
+    .status-err { background: rgba(198, 40, 40, 0.2); border: 1px solid #ef5350; color: #ffcdd2; }
+    body.light-mode .status-ok { color: #1b5e20; }
+    body.light-mode .status-err { color: #b71c1c; }
+
+    .hidden { display: none !important; }
+
+    .row-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sm-btn { padding: 5px 9px; font-size: 0.78rem; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">KEHAR EXCH</div>
+        <div>
+          <h1 id="appTitle">KEHAR EXCH — LIVE PORTAL</h1>
+          <small id="appSub">Super • Master • User Role System</small>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button id="langBtn" class="btn-outline" type="button">اردو</button>
+        <button id="themeBtn" class="btn-outline" type="button">Light</button>
+        <button id="logoutBtn" class="btn-danger hidden" type="button">Logout</button>
+      </div>
+    </header>
+
+    <div id="statusBanner" class="status-banner"></div>
+
+    <!-- Separate Portal Links -->
+    <section class="portal-bar" id="portalBar">
+      <div class="portal-card" id="cardPortalSuper">
+        <div class="portal-title" id="pSuperTitle">Super Master Portal</div>
+        <div class="link-box" id="linkSuper"></div>
+        <div class="row-actions">
+          <button class="btn-gold sm-btn" type="button" onclick="openPortal('super')">Open #super</button>
+          <button class="btn-outline sm-btn" type="button" onclick="copyText(getPortalUrl('super'))">Copy Link</button>
+        </div>
+      </div>
+
+      <div class="portal-card" id="cardPortalMaster">
+        <div class="portal-title" id="pMasterTitle">Master Portal</div>
+        <div class="link-box" id="linkMaster"></div>
+        <div class="row-actions">
+          <button class="btn-gold sm-btn" type="button" onclick="openPortal('master')">Open #master</button>
+          <button class="btn-outline sm-btn" type="button" onclick="copyText(getPortalUrl('master'))">Copy Link</button>
+        </div>
+      </div>
+
+      <div class="portal-card" id="cardPortalUser">
+        <div class="portal-title" id="pUserTitle">User Portal</div>
+        <div class="link-box" id="linkUser"></div>
+        <div class="row-actions">
+          <button class="btn-gold sm-btn" type="button" onclick="openPortal('user')">Open #user</button>
+          <button class="btn-outline sm-btn" type="button" onclick="copyText(getPortalUrl('user'))">Copy Link</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Login Card -->
+    <section class="card" id="loginCard">
+      <div class="card-header">
+        <h2 class="card-title" id="loginHeading">Portal Login</h2>
+        <span id="activePortalBadge" class="live-pill" style="background: var(--gold); color:#1a1200;">#SUPER</span>
+      </div>
+
+      <form id="loginForm">
+        <div class="form-grid">
+          <div>
+            <label for="loginRole" id="lblLoginRole">Portal Role</label>
+            <select id="loginRole">
+              <option value="super">Super Master (#super)</option>
+              <option value="master">Master (#master)</option>
+              <option value="user">User (#user)</option>
+            </select>
+          </div>
+          <div>
+            <label for="loginUserId" id="lblLoginId">User ID</label>
+            <input type="text" id="loginUserId" placeholder="Kehar" required />
+          </div>
+          <div>
+            <label for="loginPin" id="lblLoginPin">Password / PIN</label>
+            <input type="text" id="loginPin" placeholder="Khan5244" required />
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="submit" class="btn-gold" id="btnLogin">Login</button>
+          <button type="button" class="btn-outline" id="btnFillDefault" onclick="fillDefaultSuper()">Fill Super (Kehar / Khan5244)</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Authenticated Workspace -->
+    <main id="workspace" class="hidden">
+      <!-- Session Summary -->
+      <section class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title" id="sessionHeading">Active Account</h2>
+            <small id="sessionMeta" style="color: var(--muted);"></small>
+          </div>
+          <div style="text-align: end;">
+            <div style="font-size: 0.78rem; color: var(--muted);" id="lblBalance">Points Balance</div>
+            <div style="font-size: 1.35rem; font-weight: 800; color: var(--gold-bright);" id="sessionBalance">0</div>
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="btn-outline sm-btn" onclick="copyText(getRoleUrl(currentUser.role))">Copy My Portal Link</button>
+          <button type="button" class="btn-outline sm-btn" onclick="copyText('ID: ' + currentUser.id + ' | Pass: ' + currentUser.pin)">Copy ID & Pass</button>
+        </div>
+      </section>
+
+      <!-- Account Management (Super & Master Only) -->
+      <section class="card hidden" id="accountMgmtCard">
+        <div class="card-header">
+          <h2 class="card-title" id="acctMgmtHeading">Create & Manage Accounts</h2>
+        </div>
+
+        <form id="createAcctForm">
+          <div class="form-grid">
+            <div>
+              <label for="newRole" id="lblNewRole">Account Type</label>
+              <select id="newRole"></select>
+            </div>
+            <div>
+              <label for="newUserId" id="lblNewId">User ID</label>
+              <input type="text" id="newUserId" placeholder="e.g. User101" required />
+            </div>
+            <div>
+              <label for="newPin" id="lblNewPin">Password / PIN</label>
+              <input type="text" id="newPin" placeholder="e.g. Pass5244" required />
+            </div>
+            <div>
+              <label for="newPoints" id="lblNewPts">Initial Points</label>
+              <input type="number" id="newPoints" min="0" step="1" value="1000" required />
+            </div>
+          </div>
+          <button type="submit" class="btn-gold" id="btnCreateAcct">Create Account & Generate Link</button>
+        </form>
+
+        <div class="table-wrap" style="margin-top: 14px;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Role</th>
+                <th>Password/PIN</th>
+                <th>Created By</th>
+                <th>Points</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="accountsTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Markets + Stake Slip -->
+      <section class="grid-2">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" id="marketsHeading">Live Matches & Markets</h2>
+            <button type="button" class="btn-outline sm-btn" id="btnSimTick" onclick="simulateTick()">Update Live Score</button>
+          </div>
+          <div id="matchesList"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title" id="slipHeading">Points Stake Slip</h2>
+          </div>
+          <form id="stakeForm">
+            <div style="margin-bottom: 10px;">
+              <label id="lblSelectedMarket">Selected Selection</label>
+              <input type="text" id="selectedMarketLabel" readonly value="Select Back or Lay from a match" />
+            </div>
+            <div class="form-grid">
+              <div>
+                <label for="stakePoints" id="lblStakePts">Points</label>
+                <input type="number" id="stakePoints" min="1" step="1" value="100" required />
+              </div>
+              <div>
+                <label for="stakeRate" id="lblStakeRate">Rate / Odds</label>
+                <input type="number" id="stakeRate" min="1.01" step="0.01" value="1.90" required />
+              </div>
+            </div>
+            <div style="margin-bottom: 12px; font-size: 0.85rem; color: var(--muted);">
+              <span id="lblEstReturn">Est. Return:</span>
+              <strong id="estReturnVal" style="color: var(--gold-bright);">190</strong>
+            </div>
+            <button type="submit" class="btn-gold" style="width: 100%;" id="btnPlaceEntry">Submit Entry</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Ledger Table -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title" id="ledgerHeading">Points Ledger</h2>
+          <div class="row-actions">
+            <button type="button" class="btn-outline sm-btn" onclick="exportLedgerCSV()">Export CSV</button>
+            <button type="button" class="btn-outline sm-btn" onclick="exportLedgerJSON()">Export JSON</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>User ID</th>
+                <th>Match & Selection</th>
+                <th>Side</th>
+                <th>Points</th>
+                <th>Rate</th>
+                <th>Status</th>
+                <th>Control</th>
+              </tr>
+            </thead>
+            <tbody id="ledgerTbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Cloud Sync Settings (Super Master) -->
+      <section class="card hidden" id="cloudCard">
+        <div class="card-header">
+          <h2 class="card-title" id="cloudHeading">Supabase Cloud Sync (Optional)</h2>
+        </div>
+        <div class="form-grid">
+          <div>
+            <label for="sbUrl">Supabase Project URL</label>
+            <input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co" />
+          </div>
+          <div>
+            <label for="sbKey">Supabase Anon Key</label>
+            <input type="text" id="sbKey" placeholder="eyJ..." />
+          </div>
+        </div>
+        <div class="row-actions">
+          <button type="button" class="btn-gold sm-btn" onclick="saveSupabaseConfig()">Save Config</button>
+          <button type="button" class="btn-outline sm-btn" onclick="pushToSupabase()">Sync Accounts & Ledger</button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "KEHAR_EXCH_REAL_V1";
+    const SB_CONFIG_KEY = "KEHAR_EXCH_SB_V1";
+
+    const I18N = {
+      en: {
+        langBtn: "اردو",
+        appTitle: "KEHAR EXCH — LIVE PORTAL",
+        appSub: "Super • Master • User Role System",
+        loginHeading: "Portal Login",
+        btnLogin: "Login",
+        acctMgmtHeading: "Create & Manage Accounts",
+        marketsHeading: "Live Matches & Markets",
+        slipHeading: "Points Stake Slip",
+        ledgerHeading: "Points Ledger",
+        cloudHeading: "Supabase Cloud Sync (Optional)"
+      },
+      ur: {
+        langBtn: "English",
+        appTitle: "کہر ایکسچ — لائیو پورٹل",
+        appSub: "سپر ماسٹر • ماسٹر • یوزر سسٹم",
+        loginHeading: "پورٹل لاگ اِن",
+        btnLogin: "لاگ اِن کریں",
+        acctMgmtHeading: "اکاؤنٹس بنائیں اور منیج کریں",
+        marketsHeading: "لائیو میچز اور مارکیٹس",
+        slipHeading: "پوائنٹس اسٹیک سلپ",
+        ledgerHeading: "پوائنٹس لیجر",
+        cloudHeading: "سپابیس کلاؤڈ سنک (اختیاری)"
+      }
+    };
+
+    const INITIAL_MATCHES = [
+      {
+        id: "m1",
+        title: "Pakistan vs Australia — T20",
+        score: "PAK 148/4 (15.2 Ov)",
+        backName: "PAK Win",
+        backRate: 1.85,
+        layName: "AUS Win",
+        layRate: 2.04
+      },
+      {
+        id: "m2",
+        title: "Lahore Qalandars vs Karachi Kings",
+        score: "LHR 172/6 (20.0 Ov)",
+        backName: "LHR Win",
+        backRate: 1.92,
+        layName: "KHI Win",
+        layRate: 1.96
+      }
+    ];
+
+    function defaultState() {
+      return {
+        accounts: [
+          {
+            id: "Kehar",
+            pin: "Khan5244",
+            role: "super",
+            createdBy: "SYSTEM",
+            points: 100000
+          }
+        ],
+        matches: INITIAL_MATCHES,
+        ledger: []
+      };
+    }
+
+    let state = loadState();
+    let currentUser = null;
+    let selectedSelection = null;
+    let lang = "en";
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return defaultState();
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed.accounts) || parsed.accounts.length === 0) {
+          return defaultState();
+        }
+        return {
+          accounts: parsed.accounts,
+          matches: Array.isArray(parsed.matches) && parsed.matches.length ? parsed.matches : INITIAL_MATCHES,
+          ledger: Array.isArray(parsed.ledger) ? parsed.ledger : []
+        };
+      } catch {
+        return defaultState();
+      }
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function showBanner(msg, isError = false) {
+      const el = document.getElementById("statusBanner");
+      el.textContent = msg;
+      el.className = "status-banner show " + (isError ? "status-err" : "status-ok");
+      clearTimeout(showBanner._t);
+      showBanner._t = setTimeout(() => {
+        el.className = "status-banner";
+      }, 3600);
+    }
+
+    function copyText(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showBanner("Copied: " + text)).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showBanner("Copied: " + text);
+    }
+
+    function getPortalUrl(role) {
+      const base = window.location.href.split("#")[0];
+      return `${base}#${role}`;
+    }
+
+    function getRoleUrl(role) {
+      return getPortalUrl(role);
+    }
+
+    function renderPortalLinks() {
+      document.getElementById("linkSuper").textContent = getPortalUrl("super");
+      document.getElementById("linkMaster").textContent = getPortalUrl("master");
+      document.getElementById("linkUser").textContent = getPortalUrl("user");
+
+      const hashRole = (window.location.hash || "#super").replace("#", "").toLowerCase();
+      const validRole = ["super", "master", "user"].includes(hashRole) ? hashRole : "super";
+      document.getElementById("loginRole").value = validRole;
+      document.getElementById("activePortalBadge").textContent = "#" + validRole.toUpperCase();
+
+      ["super", "master", "user"].forEach(r => {
+        const card = document.getElementById("cardPortal" + r[0].toUpperCase() + r.slice(1));
+        card.classList.toggle("active-portal", r === validRole);
+      });
+    }
+
+    function openPortal(role) {
+      window.location.hash = "#" + role;
+      renderPortalLinks();
+      if (role === "super") {
+        fillDefaultSuper();
+      } else {
+        document.getElementById("loginUserId").value = "";
+        document.getElementById("loginPin").value = "";
+      }
+    }
+
+    function fillDefaultSuper() {
+      document.getElementById("loginRole").value = "super";
+      document.getElementById("loginUserId").value = "Kehar";
+      document.getElementById("loginPin").value = "Khan5244";
+      document.getElementById("activePortalBadge").textContent = "#SUPER";
+    }
+
+    document.getElementById("loginRole").addEventListener("change", (e) => {
+      document.getElementById("activePortalBadge").textContent = "#" + e.target.value.toUpperCase();
+    });
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const role = document.getElementById("loginRole").value;
+      const uid = document.getElementById("loginUserId").value.trim();
+      const pin = document.getElementById("loginPin").value.trim();
+
+      const found = state.accounts.find(
+        (a) => a.id.toLowerCase() === uid.toLowerCase() && a.pin === pin && a.role === role
+      );
+
+      if (!found) {
+        showBanner("Invalid User ID, Password/PIN, or Portal Role.", true);
+        return;
+      }
+
+      currentUser = found;
+      document.getElementById("loginCard").classList.add("hidden");
+      document.getElementById("workspace").classList.remove("hidden");
+      document.getElementById("logoutBtn").classList.remove("hidden");
+      showBanner(`Logged in as ${found.id} (${found.role.toUpperCase()})`);
+      renderWorkspace();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      currentUser = null;
+      selectedSelection = null;
+      document.getElementById("workspace").classList.add("hidden");
+      document.getElementById("logoutBtn").classList.add("hidden");
+      document.getElementById("loginCard").classList.remove("hidden");
+      showBanner("Logged out.");
+    });
+
+    function renderWorkspace() {
+      if (!currentUser) return;
+      const fresh = state.accounts.find((a) => a.id === currentUser.id);
+      if (fresh) currentUser = fresh;
+
+      document.getElementById("sessionHeading").textContent = `${currentUser.id} (${currentUser.role.toUpperCase()})`;
+      document.getElementById("sessionMeta").textContent = `Portal: ${getRoleUrl(currentUser.role)} • Created By: ${currentUser.createdBy}`;
+      document.getElementById("sessionBalance").textContent = Number(currentUser.points).toLocaleString();
+
+      const acctCard = document.getElementById("accountMgmtCard");
+      const cloudCard = document.getElementById("cloudCard");
+
+      if (currentUser.role === "super" || currentUser.role === "master") {
+        acctCard.classList.remove("hidden");
+        populateRoleOptions();
+        renderAccountsTable();
+      } else {
+        acctCard.classList.add("hidden");
+      }
+
+      if (currentUser.role === "super") {
+        cloudCard.classList.remove("hidden");
+        const cfg = JSON.parse(localStorage.getItem(SB_CONFIG_KEY) || "{}");
+        document.getElementById("sbUrl").value = cfg.url || "";
+        document.getElementById("sbKey").value = cfg.key || "";
+      } else {
+        cloudCard.classList.add("hidden");
+      }
+
+      renderMatches();
+      renderLedger();
+    }
+
+    function populateRoleOptions() {
+      const sel = document.getElementById("newRole");
+      sel.innerHTML = "";
+      if (currentUser.role === "super") {
+        sel.innerHTML = `<option value="master">Master (#master)</option><option value="user">User (#user)</option>`;
+      } else if (currentUser.role === "master") {
+        sel.innerHTML = `<option value="user">User (#user)</option>`;
+      }
+    }
+
+    document.getElementById("createAcctForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!currentUser || !["super", "master"].includes(currentUser.role)) return;
+
+      const role = document.getElementById("newRole").value;
+      const id = document.getElementById("newUserId").value.trim();
+      const pin = document.getElementById("newPin").value.trim();
+      const pts = Math.max(0, parseInt(document.getElementById("newPoints").value, 10) || 0);
+
+      if (!id || !pin) return;
+      if (state.accounts.some((a) => a.id.toLowerCase() === id.toLowerCase())) {
+        showBanner("User ID already exists.", true);
+        return;
+      }
+
+      if (pts > currentUser.points) {
+        showBanner("Insufficient points in your balance to assign.", true);
+        return;
+      }
+
+      currentUser.points -= pts;
+      const newAcct = {
+        id,
+        pin,
+        role,
+        createdBy: currentUser.id,
+        points: pts
+      };
+      state.accounts.push(newAcct);
+      saveState();
+
+      document.getElementById("createAcctForm").reset();
+      document.getElementById("newPoints").value = "1000";
+      renderWorkspace();
+      const shareInfo = `Created ${id} (${role}) | Pass: ${pin} | Link: ${getPortalUrl(role)}`;
+      copyText(shareInfo);
+    });
+
+    function adjustPoints(targetId, delta) {
+      const creator = state.accounts.find((a) => a.id === currentUser.id);
+      const target = state.accounts.find((a) => a.id === targetId);
+      if (!creator || !target) return;
+
+      if (delta > 0) {
+        if (creator.points < delta) {
+          showBanner("Not enough points to transfer.", true);
+          return;
+        }
+        creator.points -= delta;
+        target.points += delta;
+      } else {
+        const absVal = Math.abs(delta);
+        if (target.points < absVal) {
+          showBanner("Target account has insufficient points.", true);
+          return;
+        }
+        target.points -= absVal;
+        creator.points += absVal;
+      }
+
+      saveState();
+      renderWorkspace();
+      showBanner(`Updated ${target.id} balance to ${target.points}`);
+    }
+
+    function renderAccountsTable() {
+      const tbody = document.getElementById("accountsTbody");
+      tbody.innerHTML = "";
+
+      const visibleAccounts = currentUser.role === "super"
+        ? state.accounts
+        : state.accounts.filter((a) => a.createdBy === currentUser.id || a.id === currentUser.id);
+
+      visibleAccounts.forEach((acc) => {
+        const tr = document.createElement("tr");
+        const canTransfer = acc.id !== currentUser.id;
+        tr.innerHTML = `
+          <td><strong>${acc.id}</strong></td>
+          <td>${acc.role.toUpperCase()}</td>
+          <td><code>${acc.pin}</code></td>
+          <td>${acc.createdBy}</td>
+          <td><strong>${Number(acc.points).toLocaleString()}</strong></td>
+          <td>
+            <div class="row-actions">
+              <button class="btn-outline sm-btn" type="button" onclick="copyText('Link: ${getPortalUrl(acc.role)} | ID: ${acc.id} | Pass: ${acc.pin}')">Copy Share</button>
+              ${canTransfer ? `<button class="btn-ok sm-btn" type="button" onclick="adjustPoints('${acc.id}', 500)">+500</button>` : ""}
+              ${canTransfer ? `<button class="btn-danger sm-btn" type="button" onclick="adjustPoints('${acc.id}', -500)">-500</button>` : ""}
+            </div>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderMatches() {
+      const box = document.getElementById("matchesList");
+      box.innerHTML = "";
+      state.matches.forEach((m) => {
+        const div = document.createElement("div");
+        div.className = "match-box";
+        div.innerHTML = `
+          <div class="match-top">
+            <strong>${m.title}</strong>
+            <span class="live-pill">LIVE</span>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--muted);">${m.score}</div>
+          <div class="odds-row">
+            <button type="button" class="odd-btn back-btn" onclick="selectOdd('${m.id}', '${m.title}', '${m.backName}', 'BACK', ${m.backRate})">
+              <span>BACK: ${m.backName}</span>
+              <span>${m.backRate.toFixed(2)}</span>
+            </button>
+            <button type="button" class="odd-btn lay-btn" onclick="selectOdd('${m.id}', '${m.title}', '${m.layName}', 'LAY', ${m.layRate})">
+              <span>LAY: ${m.layName}</span>
+              <span>${m.layRate.toFixed(2)}</span>
+            </button>
+          </div>
+        `;
+        box.appendChild(div);
+      });
+    }
+
+    function selectOdd(matchId, matchTitle, selection, side, rate) {
+      selectedSelection = { matchId, matchTitle, selection, side, rate };
+      document.getElementById("selectedMarketLabel").value = `${matchTitle} — ${selection} (${side})`;
+      document.getElementById("stakeRate").value = rate.toFixed(2);
+      updateEstReturn();
+    }
+
+    function simulateTick() {
+      state.matches = state.matches.map((m, idx) => {
+        const delta = idx % 2 === 0 ? 0.04 : -0.03;
+        const nextBack = Math.max(1.15, Number((m.backRate + delta).toFixed(2)));
+        const nextLay = Math.max(1.15, Number((m.layRate - delta).toFixed(2)));
+        return { ...m, backRate: nextBack, layRate: nextLay };
+      });
+      saveState();
+      renderMatches();
+      showBanner("Live rates refreshed.");
+    }
+
+    function updateEstReturn() {
+      const pts = parseFloat(document.getElementById("stakePoints").value) || 0;
+      const rate = parseFloat(document.getElementById("stakeRate").value) || 1;
+      document.getElementById("estReturnVal").textContent = (pts * rate).toFixed(2);
+    }
+
+    document.getElementById("stakePoints").addEventListener("input", updateEstReturn);
+    document.getElementById("stakeRate").addEventListener("input", updateEstReturn);
+
+    document.getElementById("stakeForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!currentUser) return;
+      if (!selectedSelection) {
+        showBanner("Please select BACK or LAY from a match first.", true);
+        return;
+      }
+
+      const pts = Math.max(1, parseInt(document.getElementById("stakePoints").value, 10) || 0);
+      const rate = Math.max(1.01, parseFloat(document.getElementById("stakeRate").value) || 1.5);
+
+      if (currentUser.points < pts) {
+        showBanner("Insufficient points balance.", true);
+        return;
+      }
+
+      currentUser.points -= pts;
+      state.ledger.unshift({
+        id: "tx_" + Date.now(),
+        time: new Date().toLocaleTimeString(),
+        userId: currentUser.id,
+        matchTitle: selectedSelection.matchTitle,
+        selection: selectedSelection.selection,
+        side: selectedSelection.side,
+        points: pts,
+        rate,
+        status: "OPEN"
+      });
+
+      saveState();
+      renderWorkspace();
+      showBanner(`Entry placed for ${pts} points.`);
+    });
+
+    function settleEntry(txId, outcome) {
+      if (!currentUser || !["super", "master"].includes(currentUser.role)) return;
+      const tx = state.ledger.find((x) => x.id === txId);
+      if (!tx || tx.status !== "OPEN") return;
+
+      const acct = state.accounts.find((a) => a.id === tx.userId);
+      if (outcome === "WIN" && acct) {
+        acct.points += Math.round(tx.points * tx.rate);
+      } else if (outcome === "CANCEL" && acct) {
+        acct.points += tx.points;
+      }
+
+      tx.status = outcome;
+      saveState();
+      renderWorkspace();
+      showBanner(`Entry ${txId} marked as ${outcome}.`);
+    }
+
+    function renderLedger() {
+      const tbody = document.getElementById("ledgerTbody");
+      tbody.innerHTML = "";
+
+      const rows = currentUser.role === "user"
+        ? state.ledger.filter((x) => x.userId === currentUser.id)
+        : state.ledger;
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="8" style="color: var(--muted);">No entries yet.</td></tr>`;
+        return;
+      }
+
+      rows.forEach((tx) => {
+        const canSettle = ["super", "master"].includes(currentUser.role) && tx.status === "OPEN";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${tx.time}</td>
+          <td><strong>${tx.userId}</strong></td>
+          <td>${tx.matchTitle} — ${tx.selection}</td>
+          <td>${tx.side}</td>
+          <td>${tx.points}</td>
+          <td>${Number(tx.rate).toFixed(2)}</td>
+          <td><strong>${tx.status}</strong></td>
+          <td>
+            ${canSettle ? `
+              <div class="row-actions">
+                <button class="btn-ok sm-btn" type="button" onclick="settleEntry('${tx.id}', 'WIN')">Win</button>
+                <button class="btn-danger sm-btn" type="button" onclick="settleEntry('${tx.id}', 'LOSS')">Loss</button>
+                <button class="btn-outline sm-btn" type="button" onclick="settleEntry('${tx.id}', 'CANCEL')">Cancel</button>
+              </div>
+            ` : `<span>—</span>`}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function exportLedgerJSON() {
+      const blob = new Blob([JSON.stringify(state.ledger, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kehar-exch-ledger.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function exportLedgerCSV() {
+      const headers = ["id,time,userId,matchTitle,selection,side,points,rate,status"];
+      const lines = state.ledger.map((r) =>
+        [r.id, r.time, r.userId, `"${r.matchTitle}"`, `"${r.selection}"`, r.side, r.points, r.rate, r.status].join(",")
+      );
+      const blob = new Blob([headers.concat(lines).join("\n")], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "kehar-exch-ledger.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function saveSupabaseConfig() {
+      const url = document.getElementById("sbUrl").value.trim();
+      const key = document.getElementById("sbKey").value.trim();
+      localStorage.setItem(SB_CONFIG_KEY, JSON.stringify({ url, key }));
+      showBanner("Supabase settings saved locally.");
+    }
+
+    async function pushToSupabase() {
+      const cfg = JSON.parse(localStorage.getItem(SB_CONFIG_KEY) || "{}");
+      if (!cfg.url || !cfg.key) {
+        showBanner("Enter Supabase URL and Anon Key first.", true);
+        return;
+      }
+      try {
+        const res = await fetch(`${cfg.url.replace(/\/+$/, "")}/rest/v1/accounts`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            apikey: cfg.key,
+            Authorization: "Bearer " + cfg.key,
+            Prefer: "resolution=merge-duplicates"
+          },
+          body: JSON.stringify(state.accounts)
+        });
+        if (!res.ok) {
+          showBanner("Supabase responded with status " + res.status + ". Check your table schema.", true);
+          return;
+        }
+        showBanner("Synced accounts to Supabase.");
+      } catch (err) {
+        showBanner("Cloud sync failed: " + err.message, true);
+      }
+    }
+
+    document.getElementById("langBtn").addEventListener("click", () => {
+      lang = lang === "en" ? "ur" : "en";
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === "ur" ? "rtl" : "ltr";
+      const dict = I18N[lang];
+      Object.keys(dict).forEach((k) => {
+        const el = document.getElementById(k);
+        if (el) el.textContent = dict[k];
+      });
+    });
+
+    document.getElementById("themeBtn").addEventListener("click", () => {
+      document.body.classList.toggle("light-mode");
+      document.getElementById("themeBtn").textContent =
+        document.body.classList.contains("light-mode") ? "Dark" : "Light";
+    });
+
+    window.addEventListener("hashchange", renderPortalLinks);
+
+    renderPortalLinks();
+    fillDefaultSuper();
+    updateEstReturn();
+  </script>
+</body>
+</html>
